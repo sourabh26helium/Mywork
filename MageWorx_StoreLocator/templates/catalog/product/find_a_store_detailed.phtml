@@ -1,0 +1,73 @@
+<?php
+/** @var $block \Highgrove\StoreLocator\Block\Catalog\Product\FindAStore */
+$locations = $block->getLocations();
+/** @var \MageWorx\Locations\Api\Data\LocationInterface $location */
+$location = $block->getCurrentStore() ?: $locations->getFirstItem();
+?>
+<?php /** @var \MageWorx\Locations\Api\Data\LocationInterface $location */
+if ($location && $location->getCode() && $block->isLocationsNamesEnabled()) : ?>
+    <p>Goods may not be immediately available at this store, but in stock at our local warehouse.<br/><strong>Note:</strong> Please allow up to 10 working days for Click & Collect / Delivery</p>
+    <div class="location-button__places_list_block">
+        <ul class="location-button__places_list">
+            <li class="stores-list-item">
+                <div class="item-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="25.94" height="16.23" viewBox="0 0 56 34.99" aria-hidden="true" fill="#fff"><path d="M16.422 1.418v8.388a6.38 6.38 0 015.08-2.481 6.97 6.97 0 012.717.473 5.79 5.79 0 011.773 1.42c.445.586.73 1.278.827 2.008a11.58 11.58 0 01.232 3.192v9.688h-4.367v-8.63a10.28 10.28 0 00-.236-3.308c-.164-.46-.45-.87-.827-1.18a3.31 3.31 0 00-1.536-.354 3.66 3.66 0 00-2.008.473 2.83 2.83 0 00-1.18 1.654 7.316 7.316 0 00-.473 3.072v8.27H12.05V1.418h4.37M29.418 24.1V1.418h4.37V9.57a6.143 6.143 0 014.844-2.245 6.38 6.38 0 014.962 2.127 8.98 8.98 0 011.89 6.262c0 2.835-.6 4.962-2.008 6.5a6.143 6.143 0 01-4.844 2.245c-.952.006-1.9-.24-2.717-.7a8.026 8.026 0 01-2.48-2.008v2.363h-4.017m4.37-8.624a6.14 6.14 0 00.83 3.777 3.424 3.424 0 002.954 1.772 3.07 3.07 0 002.481-1.181 5.91 5.91 0 001.063-3.9 6.38 6.38 0 00-1.065-4.131 3.42 3.42 0 00-5.2 0 5.43 5.43 0 00-1.063 3.662zm12.406 19.5H9.57A9.69 9.69 0 010 25.283V0h6.38v25.283a3.31 3.31 0 003.19 3.308h36.624a3.31 3.31 0 003.19-3.308V0h6.5v25.283a9.69 9.69 0 01-9.688 9.688"></path></svg>
+                </div>
+                <div class="item-container">
+                    <?= /* @noEscape */
+                    $block->getLocationPageLink($location, $location->getName()) ?>
+                    <?php if ($block->getDisplayStockStatus() === 1) : ?>
+                        <?php if ($block->isProductInStock($location)) : ?>
+                            <span class="places_list_item_stock_in-stock">
+                            <span class="in-stock"><?= $block->escapeHtml(__('In Stock')) ?></span>
+                            <img alt="in-stock" width="20" height="20" src="<?= $block->escapeUrl(
+                                $block->getViewFileUrl('MageWorx_StoreLocator::images/svg/in-stock.svg')
+                                    ) ?>">
+                        </span>
+                        <?php else : ?>
+                            <span class="places_list_item_stock_out-of-stock">
+                            <span class="out-of-stock"><?= $block->escapeHtml(__('Out Of Stock')) ?></span>
+                            <img src="<?= $block->escapeUrl(
+                                $block->getViewFileUrl('MageWorx_StoreLocator::images/svg/out-of-stock.svg')
+                                    ) ?>">
+                        </span>
+                        <?php endif; ?>
+                    <?php elseif ($block->getDisplayStockStatus() === 2) : ?>
+                        <?php if ($block->isProductInStock($location) && $block->getProductQty($location)) : ?>
+                            <span class="places_list_item_stock_in-stock">
+                            <span class="in-stock"><?= $block->escapeHtml($block->getQtyMessage($location)) ?></span>
+                            <img src="<?= $block->escapeUrl(
+                                $block->getViewFileUrl('MageWorx_StoreLocator::images/svg/in-stock.svg')
+                                    ) ?>">
+                        </span>
+                        <?php else : ?>
+                            <span class="places_list_item_stock_out-of-stock">
+                            <span class="out-of-stock"><?= $block->escapeHtml(__('Out Of Stock')) ?></span>
+                            <img src="<?= $block->escapeUrl(
+                                $block->getViewFileUrl('MageWorx_StoreLocator::images/svg/out-of-stock.svg')
+                                    ) ?>">
+                        </span>
+                        <?php endif; ?>
+                    <?php endif; ?>
+                    <div class="places_list_address">
+                        <?= $block->escapeHtml($location->getAddress() . ', ' . $location->getCity() . ', <b>' . $location->getPostcode() . '</b>', ['b']) ?></div>
+                    <div class="item-append mt-2">
+                        <?php if ($location->getPhoneNumber()) { ?>
+                        <a class="btn btn-link btn-sm py-2"
+                           href="tel:<?= $block->escapeUrl($location->getPhoneNumber()); ?>"
+                           ><?= $block->escapeUrl($location->getPhoneNumber()); ?></a>
+                        <?php } ?>
+                        <a class="btn btn-link btn-sm py-2"
+                           href="<?= $block->escapeUrl($block->getRouteUrl($location)); ?>"
+                           target="_blank"><?= $block->escapeHtml(__('Get Directions')) ?></a>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div id="showLocationButtonPlace"></div>
+    </div>
+<?php elseif($block->isLocationsNamesEnabled()): ?>
+    <p class="h6 heading-normal">This product is unavailable in stores</p>
+<?php endif; ?>
+
+

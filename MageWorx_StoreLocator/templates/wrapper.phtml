@@ -1,0 +1,68 @@
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Locations */
+?>
+<div class="current_page_type" id="<?= $block->escapeHtmlAttr($block->getCurrentPageType()) ?>"></div>
+<div class="current_product" id="<?= $block->escapeHtmlAttr(is_array($block->getCurrentProductId()) ?
+                 $block->getCurrentProductId()[0] :$block->getCurrentProductId()) ?>"></div>
+<div class="mw-left-block h-100">
+    <?php if ($block->getFilterType() == 'filter') : ?>
+        <?= $block->getSearchBoxHtml() ?>
+        <div id="mw-all-stores">
+            <?= $block->getLocationsFilterHtml() ?>
+        </div>
+    <?php else : ?>
+        <div class="mw-sl__stores__wrapper flex-column d-flex">
+            <div class="mw-list_left_block">
+                <?php if ($block->getFilterType() !== 'list_without_map') : ?>
+                <div class="mw-search_box_for_list"><?= $block->getSearchBoxHtml() ?></div>
+                <?php endif; ?>
+            </div>
+
+
+            <div class="sidebar-nav w-100">
+                <div class="nav nav-tabs" role="tablist">
+                    <a class="nav-link active" id="list-tab" data-toggle="tab" href="#list" role="tab" aria-controls="list" aria-selected="true">View List</a>
+                    <?php if($this->getRequest()->getFullActionName() == 'mageworx_locationpages_locationList_view'): ?>
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#load_map_here" role="tab" aria-controls="map" aria-selected="false">View Map</a>
+                    <?php else:?>
+                        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#map" role="tab" aria-controls="map" aria-selected="false">View Map</a>
+                    <?php endif;?>
+
+                    
+                </div>
+            </div>
+            <div class="tab-content flex-grow-1 d-flex flex-column">
+                <div class="tab-pane h-100 fade show active list-all flex-grow-1 flex-column" id="list" role="tabpanel" aria-labelledby="list-tab">
+                    <div id="mw-all-stores" class="h-100 mw-all-stores">
+                        <?= $block->getLocationsListHtml() ?>
+                    </div>
+                </div>
+                
+                    <?php if($this->getRequest()->getFullActionName() == 'mageworx_locationpages_locationList_view'): ?>
+                        <div class="store-map tab-pane h-100 fade flex-grow-1 flex-column" id="load_map_here" role="tabpanel" aria-labelledby="map-tab">
+                           <div class="mw-sl__map store-map" id="load_map_data" style="position: absolute;"></div>
+                        </div>
+                    <?php else:?>
+                        <div class="store-map tab-pane h-100 fade flex-grow-1 flex-column" id="map" role="tabpanel" aria-labelledby="map-tab">
+                            <?= /* @noEscape */ $block->getLocationsMapHtml(); ?>
+                        </div>
+                    <?php endif;?>
+                
+            </div>
+        </div>
+    <?php endif; ?>
+</div>
+<script type="text/javascript">
+    require(["jquery"], function ($) {
+        $(document).ready(function () {
+            $('#list-tab').on('click', function(e) {
+                $("#load_map_here").removeClass('active show');
+                $(".list-all").addClass('active show');
+                $("#locationPopup .mw-sl__stores__wrapper").removeClass('h-100');
+            });
+            $('#profile-tab').on('click', function(e) {
+                $("#locationPopup .mw-sl__stores__wrapper").addClass('h-100')
+            });
+        });
+    });
+</script>

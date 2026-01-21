@@ -1,0 +1,64 @@
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Filter */
+$locations    = $block->getLocations();
+$defaultPlace = $block->getCurrentPlace();
+$location = $block->getCurrentLocation();
+
+//MageWorx\Locations\Block\Adminhtml\Location\Edit\Regions
+$blockRegionObj= $block->getLayout()->createBlock('\MageWorx\Locations\Block\Adminhtml\Location\Edit\Regions');
+$allRegions = $blockRegionObj->getRegionsByCountry();
+$regionList = json_decode($allRegions,true);
+?>
+<div class="container d-none" id="locator-filter-list">
+    <div class="filter-section">
+        <div class="filter-title mw-sl__stores__header__item">
+            <p id="sl__stores__current_place " class="h2 mw-sl__stores__current"><?= $block->escapeHtml($block->getCurrentPlaceName()); ?></p>
+            <p class="mw-sl__stores__current mw-store-locator-inactive-place h2 mw-sl__stores__current_all_stores">
+                <?= $block->escapeHtml(__('All Stores')); ?>
+            </p>
+            <?php /*foreach ($block->getParentFilterList() as $code => $name) : ?>
+                <p class="h2 mw-sl__stores__current mw-store-locator-inactive-place mw-sl__stores__current_<?= $block->escapeHtml($code); ?>">
+                    <?= $block->escapeHtml($name); ?>
+                </p>
+            <?php endforeach;*/ ?>
+
+            <p class="filter-sub-heading">Highgrove Bathroom stores near <span id="location-area"><?= $location ?></span></p>
+
+        </div>
+        <div class="filter-container">
+            <button onclick="resetSearchCMS()" class="btn btn-primary mr-4"> <?= $block->escapeHtml(__('Show All Stores')); ?> </button>
+            <div class="input-select filter-btn" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <p id="sl__stores__current_place" class="mw-sl__stores__current"><?php echo $block->escapeHtml($block->getCurrentPlaceName()); ?></p>
+                
+            </div>
+
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                <ul class="d-flex flex-column">
+                    <?php 
+                    $helper = $this->helper('MageWorx\LocationPages\Helper\Data');
+                    $storePath = $helper->getBasePath();
+                    //foreach ($block->getParentFilterList() as $code => $name) : 
+                    foreach ($regionList['AU'] as $code => $name) : 
+                        $storePage = $this->getUrl().$storePath.'/'.strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $name), '-'));
+                    ?>
+                            <a href="<?php echo $storePage?>"><li class="mw-sl__stores__filters__itemname mw-sl__stores__filters__item-map" id="<?= $block->escapeHtml($block->prepareCode($code)) ?>">
+                                <?= $block->escapeHtml($name); ?>
+                            </li></a>
+                    <?php
+                    endforeach; ?>
+                </ul>
+            </div>
+            <div id="location_details"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="<?= $block->escapeUrl($block->getJsLink()) ?>"></script>
+<script>
+    var locations = [];
+    //Add markers on map
+    <?php /** @var \MageWorx\Locations\Api\Data\LocationInterface $location */
+    foreach ($locations as $location) :?>
+    locations['<?= $block->escapeJs($location->getId())?>'] = <?= $block->escapeHtml($block->getLocationCoordinate($location))?>;
+    <?php endforeach; ?>
+</script>

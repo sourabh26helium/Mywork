@@ -1,0 +1,448 @@
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Map */
+//$locations = $block->getLocations();
+$setcustomCenter='0';
+if($this->getRequest()->getFullActionName()=="mageworx_locationpages_location_view")
+{
+    $zoomValue='10';
+    $setcustomCenter='1';
+    $blockLocationObj= $block->getLayout()->createBlock('\MageWorx\LocationPages\Block\Location');
+    $getLocationData = $blockLocationObj->getCurrentLocation();
+    $locLatitude = $getLocationData->getLatitude();
+    $locLongitude = $getLocationData->getLongitude();
+}
+else
+{
+    $zoomValue=$block->escapeJs($block->getMapZoom());
+}
+$blockObj= $block->getLayout()->createBlock('\Highgrove\StoreLocator\Block\Locations');
+$locations = $blockObj->getMapLocations();
+//echo '<pre>hereall';print_r($locations->getData());die;
+if ($block->isShowMap()) : ?>
+    <div class="mw-sl__map store-map" id="mw-sl-map"></div>
+    <script>
+        var map, geocoder;
+        var markers = [];
+        var locations = [];
+        var center = {'lat' : 0, 'lng' : 0};
+        var zoom = <?= $zoomValue?>;
+        var stylers = [
+            {
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#f5f5f5"
+                }
+                ]
+            },
+            {
+                "elementType": "labels.icon",
+                "stylers": [
+                {
+                    "visibility": "off"
+                }
+                ]
+            },
+            {
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#616161"
+                }
+                ]
+            },
+            {
+                "elementType": "labels.text.stroke",
+                "stylers": [
+                {
+                    "color": "#f5f5f5"
+                }
+                ]
+            },
+            {
+                "featureType": "administrative.land_parcel",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#bdbdbd"
+                }
+                ]
+            },
+            {
+                "featureType": "landscape",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#ffffff"
+                }
+                ]
+            },
+            {
+                "featureType": "landscape",
+                "elementType": "geometry.fill",
+                "stylers": [
+                {
+                    "color": "#ffffff"
+                }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#ffffff"
+                }
+                ]
+            },
+            {
+                "featureType": "poi",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#757575"
+                }
+                ]
+            },
+            {
+                "featureType": "poi.park",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#9e9e9e"
+                }
+                ]
+            },
+            {
+                "featureType": "road",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#eff1f5"
+                }
+                ]
+            },
+            {
+                "featureType": "road.arterial",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#757575"
+                }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#dedee2"
+                }
+                ]
+            },
+            {
+                "featureType": "road.highway",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#616161"
+                }
+                ]
+            },
+            {
+                "featureType": "road.local",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#9e9e9e"
+                }
+                ]
+            },
+            {
+                "featureType": "transit.line",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#e5e5e5"
+                }
+                ]
+            },
+            {
+                "featureType": "transit.station",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#eeeeee"
+                }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [
+                {
+                    "color": "#eff1f5"
+                }
+                ]
+            },
+            {
+                "featureType": "water",
+                "elementType": "labels.text.fill",
+                "stylers": [
+                {
+                    "color": "#9e9e9e"
+                }
+                ]
+            }
+        ];
+
+        function createMarker(location) {
+            return new google.maps.Marker({
+                position: location,
+                icon: '<?= $block->escapeHtml($block->getMapIcon())?>',
+                map: map
+                <?php if (count($locations) > 255) :?>
+                    , optimized: false
+                <?php endif; ?>
+            });
+        }
+
+        function initialize() {
+            var restriction;
+            <?php $countries = $block->getCountriesForAutocomplete();
+            if ($countries) :?>
+            var countries = JSON.parse('<?= $block->escapeJs(json_encode($block->getCountriesForAutocomplete()))?>');
+                restriction = {country: countries};
+            <?php endif; ?>
+
+            try {
+                initAutocomplete(restriction);
+            } catch (error) {
+
+            }
+
+            geocoder = new google.maps.Geocoder();
+
+            <?php if($setcustomCenter==1):?>
+                center = new google.maps.LatLng(<?php echo $locLatitude?>,<?php echo $locLongitude?>);
+            <?php else:?>
+                <?php if ($block->getMapCenter()) :
+                        $lat=0;
+                        $lng=0;
+                        $location=$block->getMapCenter();
+                        if(is_array($location)) {
+                            $lat=$location['lat'];
+                            $lng=$location['lng'];
+                        } else if (is_string($location)) {
+                            preg_match('/lat:\s*(-?\d+\.\d+)/', $location, $latMatch);
+                            preg_match('/lng:\s*(-?\d+\.\d+)/', $location, $lngMatch);
+                            $lat = $latMatch[1];
+                            $lng = $lngMatch[1];
+                        }
+                    ?>
+                    center = new google.maps.LatLng(<?=  $lat?>,<?=  $lng?>);
+                <?php elseif ($block->getDefaultPlace()) : ?>
+                    geocoder.geocode({'address': '<?= $block->escapeHtml($block->getDefaultPlace()) ?>'}, function (results, status) {
+                        if (status === 'OK') {
+                            center = results[0].geometry.location;
+                            map.setCenter(center);
+                        } else {
+                            console.log('Geocode was not successful for the following reason: ' + status);
+                        }
+                    });
+                <?php endif; ?>
+            <?php endif; ?>
+
+            var mapOptions = {
+                center: center,
+                zoom: zoom,
+                mapTypeId: google.maps.MapTypeId.roadmap,
+                disableDefaultUI: true,
+                styles: stylers,
+                zoomControl: true
+            };
+
+            //Create map
+            map = new google.maps.Map(document.getElementById("mw-sl-map"), mapOptions);
+
+            require(["jquery"], function ($) {
+                markers = [];
+                //Add markers on map
+                <?php /** @var \MageWorx\Locations\Api\Data\LocationInterface $location */
+                foreach ($locations as $location) :
+                    if (!$block->isLocationCoordinateCorrect($location)) {
+                        continue;
+                    }?>
+                    locations['<?= $block->escapeJs($location->getId())?>'] = <?= $block->escapeHtml($block->getLocationCoordinate($location))?>;
+                    var marker_<?= $block->escapeJs($location->getId())?> = createMarker(locations['<?= $block->escapeJs($location->getId())?>']);
+                    //Add click action for marker
+                    marker_<?= $block->escapeJs($location->getId())?>.addListener('click', function () {
+                        map.setCenter(locations['<?= $block->escapeJs($location->getId())?>']);
+                        map.setZoom(zoom + 5);
+                        showLocationDetails('<?= $block->escapeJs($location->getId())?>');
+                    });
+
+                    const contentString_<?= $block->escapeJs($location->getId())?> = "<div class='figure-caption'><?= $block->escapeJs($location->getData('name'))?></div>";
+                    const infowindow_<?= $block->escapeJs($location->getId())?> = new google.maps.InfoWindow({
+                        content: contentString_<?= $block->escapeJs($location->getId())?>,
+                      });
+                    marker_<?= $block->escapeJs($location->getId())?>.addListener("mouseover", () => {
+                        infowindow_<?= $block->escapeJs($location->getId())?>.open(map, marker_<?= $block->escapeJs($location->getId())?>);
+                      });
+                    marker_<?= $block->escapeJs($location->getId())?>.addListener("mouseout", () => {
+                        infowindow_<?= $block->escapeJs($location->getId())?>.close();
+                      });
+                    marker_<?= $block->escapeJs($location->getId())?>.addListener("click", () => {
+                        window.location.href = "<?php echo $location->getPageFullUrl()?>";
+                        /*$('#mw-sl__lat').val('<?php //echo $block->escapeJs($location->getLatitude())?>');
+                        $('#mw-sl__lng').val('<?php //echo $block->escapeJs($location->getLongitude())?>');//
+                        $('.load_store_list').val('1');
+                        $('.mw-sl_search_text').val('<?php //echo $block->escapeJs($location->getData('name'))?>');
+
+
+                        $('#mw_administrative_area_level_1').val('<?php //echo $block->escapeJs($location->getRegion())?>');
+                        $('#mw_locality').val('');
+                        $("#mw-store-locator-locations #locator-filter-list #location-area").text("<?php //echo $block->escapeJs($location->getData('name'))?>");
+                        searchLocation('by_radius');*/
+
+                        //not required
+                        //$('#mw_locality').val('<?php //echo $block->escapeJs($location->getData('city'))?>');
+                        //var str = '<?php //echo $block->escapeJs($location->getData('name'))?>';
+                        //var res = str.replace("Highgrove Bathrooms - ", "");
+                        //$('#mw_locality').val(res);
+                      });
+
+
+
+
+                markers.push(marker_<?= $block->escapeJs($location->getId())?>);
+                <?php endforeach; ?>
+
+                //Group markers in clusters
+                //It's possible to change gridSize for better clusters size depending on stores count
+                var markerCluster = new MarkerClusterer(map, markers,
+                    {
+                        imagePath: '<?= $block->escapeJs($block->getClusterIcon())?>',
+                        gridSize: 30
+                    });
+
+                //Set center on pin when show store details
+                $(document).on('set_map_center_on_location', function(event) {
+                    var code = event.target.id;
+                    if (!code) {
+                        code = $(event.target).closest('div').attr('id');
+                    }
+
+                    map.setCenter(locations[code]);
+                    map.setZoom(zoom + 5);
+                });
+
+                //Add action on filter click
+                $(document).on('set_map_center_on_filter_item', function(event) {
+                    var code = event.target.id;
+                    if (code !== 'all_stores') {
+                        geocoder.geocode({'address': $(event.target).html()}, function (results, status) {
+                            if (status === 'OK') {
+                                map.setCenter(results[0].geometry.location);
+                                map.setZoom(zoom + 1);
+                            } else {
+                                console.log('Geocode was not successful for the following reason: ' + status);
+                            }
+                        });
+                    }
+                });
+
+                //Set map on default center by click on pin
+                $('.pin-to-center').click(function () {
+                    map.setCenter(center);
+                    map.setZoom(zoom);
+                });
+
+                //Set center on pin when show current position and add pin
+                $(document).on('show_current_position', function(event, coordinates) {
+                    var currentPosition = new google.maps.LatLng(coordinates);
+                    map.setCenter(currentPosition);
+                });
+
+                function showLocationDetails(code) {
+                    if ($('.mw-store-locator-active-place.store-list-item').hasClass('is-active')) {
+                        $('.mw-store-locator-active-place.store-list-item').removeClass('is-active');
+                    }
+
+                    $('.mw-sl__stores__filters').removeClass('is-active');
+                    $('.mw-sl__stores__details').removeClass('is-active');
+                    $('.location-header').removeClass('is-active');
+                    $('#location-header').toggleClass('is-active');
+
+                    if ($('#location-details_' + code).length < 1) {
+                        var currentPage =  $('.current_page_type').attr('id');
+                        $.ajax({
+                            url: '<?= $block->escapeUrl($block->getBaseUrl());?>store_locator/location/locationdetail?_=' + new Date().getTime() + '&id=' + code
+                                + '&current_page=' + currentPage,
+                            type: 'POST',
+                            isAjax: true,
+                            dataType: 'html',
+                            showLoader: true,
+                            data: mwLocations,
+                            success: function (xhr, status, errorThrown) {
+                                // if ($('#location_details').length > 0) {
+                                //     $(xhr).appendTo('#location_details');
+                                // } else {
+                                //     $(xhr).appendTo('#location_details_' + code);
+                                // }
+                                $('.location-info-block_' + code).toggleClass('is-active');
+                                $('#location-details_' + code).toggleClass('is-active');
+                                $('#location-header').toggleClass('is-active');
+                                $('#location-header_' + code).toggleClass('is-active');
+                            },
+                            error: function (xhr, status, errorThrown) {
+                                console.log('There was an error loading stores\' data.');
+                                console.log(errorThrown);
+                            }
+                        });
+                    } else {
+                        $('.location-info-block_' + code).toggleClass('is-active');
+                        $('#location-details_' + code).toggleClass('is-active');
+                        $('#location-header').toggleClass('is-active');
+                        $('#location-header_' + code).toggleClass('is-active');
+                    }
+                    $('.location-info-block_' + code).addClass('mw-store-locator-active-place');
+                    if ($('.mw-sl__content--map-top').length) {
+                        // $('.location-info-block_' + code).insertBefore(jQuery('.mw-sl__stores__list__item').first());
+                        $([document.documentElement, document.body]).animate({
+                            scrollTop: jQuery(".mw-sl__stores__list").offset().top
+                        }, 500);
+                    }
+                }
+                google.maps.event.addListenerOnce(map, 'tilesloaded', function(){
+                    var pageIdentifier = jQuery('#locationPopup #page_identifier').val();
+                    if(jQuery('#region_page').val())
+                        var pageRegion = jQuery('#region_page').val();
+                    else
+                        var pageRegion = '0';
+
+                    if(pageIdentifier=='mw-store-locator' || pageRegion=='1')
+                    {
+                        if ($('#load_map_here').length)
+                        {
+                            $('#load_map_data').html($('#mw-sl-map').html())
+                        }
+                    }
+                });
+            });
+        }
+
+        require(["jquery"], function ($) {
+            $(document).on('map_initialize', function () {
+                initialize();
+            });
+
+            $( document ).ready(function() {
+                if ( $('#locationPopup #mw-store-locator-locations #cms_locations').length) {
+                    $('#locationPopup').trigger('map_initialize');
+                }
+            });
+        });
+    </script>
+
+<?php endif; ?>

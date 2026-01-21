@@ -1,0 +1,270 @@
+<?php
+/** @var $block \Highgrove\StoreLocator\Block\LocationsList */
+$locations = $block->getLocations();
+$defaultLocationId = $block->getLocationId();
+?>
+<?php $stock_img = $block->getViewFileUrl('MageWorx_StoreLocator::images/svg/in-stock.svg'); ?>
+<?php $out_stock_img = $block->getViewFileUrl('MageWorx_StoreLocator::images/svg/out-of-stock.svg'); ?>
+<div class="mw-sl__stores__list" id="mw-sl__stores__list_block">
+        <?php if (count($locations)) : ?>
+            <script type="text/javascript">
+              require([
+                  "jquery",
+                  "uiRegistry",
+                  "mage/url",
+                  "Magento_Customer/js/customer-data"
+              ], function ($, registry, urlBuilder, customerData) {
+                    $(document).ready(function () {
+                      if (!!getCookie('mageworx_location_id')) {
+                        if (document.querySelector('.hg-sl__store__select[data-bind="' + getCookie('mageworx_location_id') + '"]')) {
+                          $('.hg-sl__store__select').removeClass('active');
+                          $('.hg-sl__store__select[data-bind="' + getCookie('mageworx_location_id') + '"]').addClass('active');
+                        }
+                      }
+                      $(document).on('click', '.hg-sl__store__select', function () {
+                        const locationId = (typeof $(this).attr('data-bind') !== 'undefined' && $(this).attr('data-bind').trim() !== '')
+                          ? $(this).attr('data-bind')
+                          : <?=$defaultLocationId?>;
+                        jQuery(".hg-sl__store__select").removeClass("active");
+                        jQuery(this).addClass('active');
+                        <?php if ($block->isLoggedIn()): ?>
+                          let url = urlBuilder.build('rest/V1/customer/location/'+locationId);
+                          $.ajax({
+                            url: url,
+                            type: 'POST',
+                            isAjax: true,
+                            showLoader: true,
+                            success: function (xhr, status, errorThrown) {
+                              document.cookie = 'mageworx_location_id' + "=" + locationId + "; expires=604800; path=/";
+                              triggerLocationChangeEvent(locationId);
+
+                              closeStoreSelector();
+                            },
+                            error: function (xhr, status, errorThrown) {
+                              console.log('Error saving preferred store.');
+                              console.log(errorThrown);
+                            }
+                          });
+                        <?php else: ?>
+                          document.cookie = 'mageworx_location_id' + "=" + locationId + "; expires=604800; path=/";
+                          triggerLocationChangeEvent(locationId);
+                          closeStoreSelector();
+                        <?php endif; ?>
+                        if(locationId)
+                        {
+                          var additional_data='';
+                          if($('#find_a_store .item-container').length > 0)
+                          {
+                            var curr_prod_id = $("#curr_prod_id").val();
+                            var str = curr_prod_id;
+                            var curr_prod_id_updated = str.replaceAll("+", "**");
+                            var additional_data = '&prodSku='+curr_prod_id_updated;
+                          }
+
+                          $.ajax({
+                                url: '<?php echo $block->getAjaxUrl()?>',
+                                type: 'POST',
+                                isAjax: true,
+                                showLoader: true,
+                                data:'loc_id='+locationId+additional_data,
+                                success: function (xhr, status, errorThrown) {
+                                  if(xhr)
+                                  {
+                                    $('.set-my-locaton').html('Your store: '+xhr.name+', '+xhr.postcode);
+                                    $('.set-my-locaton-mob').html(xhr.name+', '+xhr.postcode);
+                                    var stock_img = "<?php echo $stock_img?>";
+                                    var out_stock_img = "<?php echo $out_stock_img?>";
+                                    jQuery('.pickup_data_stores .item-container .custom-radio .hg-sl__store__select').prop('checked', false);
+                                    jQuery(".pickup_data_stores .item-container .custom-radio .hg-sl__store__select").removeClass("active");
+                                    jQuery(".pickup_data_stores .item-container .custom-radio #store"+locationId).addClass('active');
+
+                                    if($('#find_a_store .item-container').length > 0)
+                                    {
+                                        /*var html = '<a href="'+xhr.store_url+'">'+xhr.name+'</a><span class="places_list_item_stock_in-stock"><span class="in-stock">In Stock</span><img src="'+stock_img+'"></span><div class="places_list_address">'+xhr.address+', <b>'+xhr.postcode+'</b></div><div class="item-append mt-2"><a class="btn btn-link btn-sm py-2" href="tel:'+xhr.phone+'">'+xhr.phone+'</a><a class="btn btn-link btn-sm py-2" href="'+xhr.direction+'" target="_blank">Get Directions</a></div>'*/
+                                        if(xhr.status=='1')
+                                        {
+                                          var statusHtml = '<span class="places_list_item_stock_in-stock"><span class="in-stock">In Stock</span><img src="'+stock_img+'"></span>';
+
+                                          $('.box-tocart').removeClass('d-none');
+                                          $('.out-of-stock-div').addClass('d-none');
+                                        }
+                                        else
+                                        {
+                                          var statusHtml = '<span class="places_list_item_stock_out-of-stock"><span class="out-of-stock">Out of Stock</span><img src="'+out_stock_img+'"></span>';
+                                          $('.box-tocart').addClass('d-none');
+                                          $('.out-of-stock-div').removeClass('d-none');
+                                        }
+                                        var html = '<a href="'+xhr.store_url+'">'+xhr.name+'</a>'+statusHtml+'<div class="places_list_address">'+xhr.address+', <b>'+xhr.postcode+'</b></div><div class="item-append mt-2"><a class="btn btn-link btn-sm py-2" href="tel:'+xhr.phone+'">'+xhr.phone+'</a><a class="btn btn-link btn-sm py-2" href="'+xhr.direction+'" target="_blank">Get Directions</a></div>'
+                                        $('#find_a_store .item-container').html(html);
+
+                                    }
+
+                                    // helper state + functions to handle one retry and cookie clearing
+                                    var hasRetriedAddToCart = false;
+
+                                    function clearUserSelectedCookies() {
+                                        document.cookie = 'user_selected_product' + "= "+ "; expires=86400; path=/";
+                                        document.cookie = 'user_selected_qty' + "= " + "; expires=86400; path=/";
+                                    }
+
+                                    function reloadCartAndMaybeRetry(urlAddCart) {
+                                        if (customerData && typeof customerData.reload === 'function') {
+                                            var reloadPromise = customerData.reload(['cart'], true);
+                                            console.log('Cart reload requested.');
+
+                                            if (reloadPromise && typeof reloadPromise.done === 'function') {
+                                                reloadPromise.done(function () {
+                                                    var cartData = customerData.get('cart')();
+                                                    var summaryCount = cartData && cartData.summary_count ? cartData.summary_count : 0;
+
+                                                    // If cart is still empty after first reload, try to add to cart once more
+                                                    if (summaryCount === 0 && !hasRetriedAddToCart) {
+                                                        hasRetriedAddToCart = true;
+                                                        console.log('Cart still empty after first reload, retrying add to cart once.');
+
+                                                        $.ajax({
+                                                            url: urlAddCart,
+                                                            type: 'POST',
+                                                            isAjax: true,
+                                                            showLoader: true,
+                                                            success: function () {
+                                                                console.log('Second add to cart attempt completed.');
+                                                                // Reload cart again after second attempt, but do not retry anymore
+                                                                if (customerData && typeof customerData.reload === 'function') {
+                                                                    customerData.reload(['cart'], true);
+                                                                }
+                                                            },
+                                                            error: function (xhr2, status2, errorThrown2) {
+                                                                console.log('Error on second add to cart attempt.');
+                                                                console.log(errorThrown2);
+                                                            },
+                                                            complete: function () {
+                                                                clearUserSelectedCookies();
+                                                            }
+                                                        });
+                                                    } else {
+                                                        // Cart has items (added successfully on first attempt) or we've already retried
+                                                        clearUserSelectedCookies();
+                                                    }
+                                                });
+                                            } else {
+                                                // Fallback: if we can't chain on reload promise, just clear cookies
+                                                clearUserSelectedCookies();
+                                            }
+                                        } else {
+                                            // No customerData available, just clear cookies
+                                            clearUserSelectedCookies();
+                                        }
+                                    }
+
+                                    //send ajax request to ad product to cart
+                                    let urlAddCart = urlBuilder.build("/highgrove_store_locator/cart/addtocart/");
+                                    $.ajax({
+                                      url: urlAddCart,
+                                      type: 'POST',
+                                      isAjax: true,
+                                      showLoader: true,
+                                      success: function (xhrAdd, statusAdd, errorThrownAdd) {
+                                        if (customerData && typeof customerData.invalidate === 'function') {
+                                            customerData.invalidate(['cart']);
+                                            console.log('Cart invalidated.');
+                                        }
+
+                                        // Reload cart and, if needed, do a single retry of add to cart
+                                        reloadCartAndMaybeRetry(urlAddCart);
+                                      },
+                                      error: function (xhrAdd, statusAdd, errorThrownAdd) {
+                                        console.log('Error saving product to cart.');
+                                        console.log(errorThrownAdd);
+                                        // Still clear cookies on hard failure
+                                        clearUserSelectedCookies();
+
+                                        //moved from main.js
+                                        if($("#category_page").val()){
+                                            //if category page
+                                            let r = (Math.random() + 1).toString(36).substring(7);
+                                            var currentUrl = window.location.href;
+                                            var url = new URL(currentUrl);
+                                            url.searchParams.set("reload", r);
+                                            var newUrl = url.href; 
+                                            window.location.href = newUrl;
+                                        }
+
+                                        if($("#home_page").val())
+                                        {
+                                            //if home page
+                                            location.reload();
+                                        } 
+                                      }
+                                    });
+                                    
+                                  }
+
+                                },
+                                error: function (xhr, status, errorThrown) {
+
+                                }
+                              });
+                        }
+
+                    });
+                  });
+                });
+
+              function triggerLocationChangeEvent(locationId) {
+                const event = new CustomEvent("mageworxLocationChanges", {detail: {locationId: locationId}});
+                window.dispatchEvent(event);
+              }
+
+              function closeStoreSelector() {
+                  let close='';
+                  <?php if ($block->isCheckout()): ?>
+                  //close = document.querySelector('#locationPopup').closest('.modal-inner-wrap').querySelector('header.modal-header button.action-close');
+                  <?php else: ?>
+                  close = document.querySelector('#findInStorePopup button.close');
+                  <?php endif; ?>
+
+                  if (close) {
+                      close.click();
+                  }
+              }
+
+              function getCookie(cname) {
+                  var name = cname + "=";
+                  var ca = document.cookie.split(';');
+                  for(var i = 0; i < ca.length; i++) {
+                      var c = ca[i];
+                      while (c.charAt(0) == ' ') {
+                          c = c.substring(1);
+                      }
+                      if (c.indexOf(name) == 0) {
+                          return c.substring(name.length, c.length);
+                      }
+                  }
+                  return "";
+              }
+            </script>
+      <ul id="store_all_pages" class="d-none">
+        <?php
+        /** @var $location \MageWorx\Locations\Api\Data\LocationInterface $location */
+        foreach ($locations as $location) : ?>
+            <?= /* @noEscape */
+            $block->getLocationInfoForListHtml($location); ?>
+        <?php endforeach; ?>
+      </ul>
+      <ul id="store_cms_page" class="d-none">
+        <?php
+        /** @var $location \MageWorx\Locations\Api\Data\LocationInterface $location */
+        foreach ($locations as $location) : ?>
+            <?= /* @noEscape */
+            $block->getLocationInfoForCMSHtml($location); ?>
+        <?php endforeach; ?>
+
+      </ul>
+        <?php else : ?>
+            <div class="mw-sl__no-stores"><p><?= $block->escapeHtml(__('There are no stores.')); ?></p></div>
+
+
+
+        <?php endif; ?>
+</div>

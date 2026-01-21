@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Override to include Fat Zebra credentials
+-->
+<form xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Ui:etc/ui_configuration.xsd">
+    <fieldset name="google" sortOrder="1000">
+        <settings>
+            <collapsible>true</collapsible>
+            <opened>false</opened>
+            <label translate="true">Google</label>
+        </settings>
+        <field name="place_id" formElement="input">
+            <argument name="data" xsi:type="array">
+                <item name="config" xsi:type="array">
+                    <item name="source" xsi:type="string">location</item>
+                </item>
+            </argument>
+            <settings>
+                <dataType>text</dataType>
+                <label translate="true">Google Place ID</label>
+                <visible>true</visible>
+                <dataScope>place_id</dataScope>
+            </settings>
+        </field>
+    </fieldset>
+</form>

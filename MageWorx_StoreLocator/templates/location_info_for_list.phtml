@@ -1,0 +1,143 @@
+<?php
+/** @var $block \Highgrove\StoreLocator\Block\LocationInfo */
+/** @var $location \MageWorx\Locations\Api\Data\LocationInterface $location */
+
+$location = $block->getLocation();
+$cookieValue = $block->getSelectedStore();
+$locationId = (int)$location->getId();
+$stockStatus = $block->isProductInStock($location);
+?>
+
+<li class="11111 stores-list-item location-info-block_<?= $block->escapeHtmlAttr($locationId) ?>">
+    <div class="item-container pt-0 w-100 position-relative <?= $block->escapeHtmlAttr('js-item-' . $locationId) ?>">
+        <?php if ($block->isCheckout()) : ?>
+            <div class="custom-control custom-radio">
+                <input
+                    type="radio"
+                    name="HGpickStore"
+                    id="store<?= $block->escapeHtmlAttr($locationId) ?>"
+                    data-bind="<?= $block->escapeHtmlAttr($locationId) ?>"
+                    class="custom-control-input hg_store <?= ($cookieValue == $locationId) ? 'active' : '' ?>"
+                    <?= ($cookieValue == $locationId) ? 'checked' : '' ?>
+                />
+                <label class="custom-control-label" for="store<?= $block->escapeHtmlAttr($locationId) ?>">
+                    <span>
+                        <address class="mw-sl__store__info pl-0">
+                            <span class="mw-sl__store__info__name">
+                                <?= $block->escapeHtml($block->getLocationName($location)) ?>
+                            </span>
+                            
+                            <?php if ($stockStatus === $block::OUT_OF_STOCK): ?>
+                                <span class="places_list_item_stock_out-of-stock">
+                                    <span class="out-of-stock">
+                                        <?= $block->escapeHtml(__('Out Of Stock')) ?>
+                                    </span>
+                                    <img 
+                                        src="<?= $block->escapeUrl($block->getViewFileUrl('MageWorx_StoreLocator::images/svg/out-of-stock.svg')) ?>" 
+                                        alt="<?= $block->escapeHtmlAttr(__('Out Of Stock')) ?>" 
+                                        width="20" 
+                                        height="20" 
+                                    />
+                                </span>
+                            <?php elseif ($stockStatus === $block::IN_STOCK): ?>
+                                <span class="places_list_item_stock_in-stock">
+                                    <span class="in-stock">
+                                        <?= $block->escapeHtml(__('In Stock')) ?>
+                                    </span>
+                                    <img 
+                                        src="<?= $block->escapeUrl($block->getViewFileUrl('MageWorx_StoreLocator::images/svg/in-stock.svg')) ?>" 
+                                        alt="<?= $block->escapeHtmlAttr(__('In Stock')) ?>" 
+                                        width="20" 
+                                        height="20" 
+                                    />
+                                </span>
+                            <?php endif; ?>
+
+                            <br/>
+                            <span class="force-font-weight-normal">
+                                <?= $block->escapeHtml($location->getAddress()) ?>,
+                                <?= $block->escapeHtml($location->getCity()) ?>,
+                                <?= ($location->getRegion() == \MageWorx\Locations\Model\Source\Region::NO_REGIONS)
+                                    ? ''
+                                    : $block->escapeHtml($location->getRegion()) ?>,
+                                <?= $block->escapeHtml($location->getPostcode()) ?>
+                            </span>
+                        </address>
+                    </span>
+                </label>
+            </div>
+        <?php else : ?>
+            <address class="mw-sl__store__info pl-0">
+                <span class="mw-sl__store__info__name">
+                    <?= $block->escapeHtml($block->getLocationName($location)) ?>
+                </span>
+
+                <?php if ($stockStatus === $block::OUT_OF_STOCK): ?>
+                    <span class="places_list_item_stock_out-of-stock">
+                        <span class="out-of-stock"><?= $block->escapeHtml(__('Out Of Stock')) ?></span>
+                        <img 
+                            src="<?= $block->escapeUrl($block->getViewFileUrl('MageWorx_StoreLocator::images/svg/out-of-stock.svg')) ?>" 
+                            alt="<?= $block->escapeHtmlAttr(__('Out Of Stock')) ?>" 
+                            width="20" 
+                            height="20" 
+                        />
+                    </span>
+                <?php elseif ($stockStatus === $block::IN_STOCK): ?>
+                    <span class="places_list_item_stock_in-stock">
+                        <span class="in-stock"><?= $block->escapeHtml(__('In Stock')) ?></span>
+                        <img 
+                            src="<?= $block->escapeUrl($block->getViewFileUrl('MageWorx_StoreLocator::images/svg/in-stock.svg')) ?>" 
+                            alt="<?= $block->escapeHtmlAttr(__('In Stock')) ?>" 
+                            width="20" 
+                            height="20" 
+                        />
+                    </span>
+                <?php endif; ?>
+
+                <br/>
+                <?= $block->escapeHtml($location->getAddress()) ?>,
+                <?= $block->escapeHtml($location->getCity()) ?>
+
+                <br/>
+                <span class="force-font-weight-normal">
+                    <?= ($location->getRegion() == \MageWorx\Locations\Model\Source\Region::NO_REGIONS)
+                        ? ''
+                        : $block->escapeHtml($location->getRegion()) ?>,
+                    <?= $block->escapeHtml($location->getPostcode()) ?>
+                </span>
+            </address>
+            
+            <div class="item-append mt-2">
+                <?php if ($location->getPhoneNumber()): 
+                    $phoneNumber = preg_replace('/[^0-9+\-\s]/', '', $location->getPhoneNumber());
+                ?>
+                    <a class="btn btn-link btn-sm py-2" href="tel:<?= $block->escapeUrl($phoneNumber) ?>">
+                        <?= $block->escapeHtml($phoneNumber) ?>
+                    </a>
+                <?php endif; ?>
+                
+                <a class="btn btn-link btn-sm py-2"
+                   href="<?= $block->escapeUrl($block->getRouteUrl($location)) ?>" 
+                   target="_blank"
+                   rel="noopener noreferrer">
+                    <?= $block->escapeHtml(__('Get Directions')) ?>
+                </a>
+            </div>
+            
+            <a href="<?= $block->escapeUrl($location->getPageFullUrl()) ?>" 
+               class="btn btn-secondary btn-view-store">
+                <?= $block->escapeHtml(__('View Store')) ?>
+            </a>
+            
+            <div class="custom-control custom-radio store-select-container">
+                <button
+                    class="hg-sl__store__select custom-control-label <?= ($cookieValue == $locationId) ? 'active' : '' ?>"
+                    data-bind="<?= $block->escapeHtmlAttr($locationId) ?>"
+                    data-code="<?= $block->escapeHtmlAttr($location->getPostcode()) ?>"
+                >
+                    <span class="sr-only"><?= $block->escapeHtml(__('Select store')) ?></span>
+                </button>
+            </div>
+        <?php endif; ?>
+    </div>
+</li>

@@ -1,0 +1,250 @@
+[
+    {
+        "location": "queensland",
+        "location_text": "Queensland",
+        "latitude": -27.46977070000000,
+        "longitude": 153.02512350000000,
+        "viewport": "(-20.9175738, 142.7027956)",
+        "drop_text": "Queensland"
+    },
+    {
+        "location": "new-south-wales",
+        "location_text": "New South Wales",
+        "latitude": -33.86881970000000,
+        "longitude": 151.20929550000000,
+        "viewport": "(-31.2532183, 146.921099)",
+        "drop_text": "New South Wales"
+    },
+    {
+        "location": "victoria",
+        "location_text": "Victoria",
+        "latitude": -37.47130770000000,
+        "longitude": 144.78515310000000,
+        "viewport":"(-37.4713077, 144.7851531)",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "australian-capital-territory",
+        "location_text": "Australian Capital Territory",
+        "latitude": -35.4734679,
+        "longitude": 149.0123679,
+        "viewport":"((-35.9207620508012, 148.7626751797344), (-35.12451699989393, 149.3992844737043))",
+        "drop_text": "Australian Capital Territory"
+    },
+    {
+        "location": "south-australia",
+        "location_text": "South Australia",
+        "latitude": -34.92527800000000,
+        "longitude": 138.56083300000000,
+        "viewport":"((-38.13459125272067, 129.0013399850446), (-25.99637654178241, 141.0029556480488))",
+        "drop_text": "South Australia"
+    },
+    {
+        "location": "tasmania",
+        "location_text": "Tasmania",
+        "latitude": -42.833056,
+        "longitude": 147.275833,
+        "viewport":"((-44.05571350566314, 143.7080670109863), (-39.1296041439358, 148.6166749599173))",
+        "drop_text": "Tasmania"
+    },
+    {
+        "location": "western-australia",
+        "location_text": "Western Australia",
+        "latitude": -31.9142574,
+        "longitude": 115.8230694,
+        "viewport":"((-35.21320158608602, 112.7604507204237), (-13.61050075823819, 129.0018535446431))",
+        "drop_text": "Western Australia"
+    },
+    {
+        "location": "canberra",
+        "location_text": "Canberra",
+        "latitude": -35.3075,
+        "longitude": 149.124417,
+        "viewport":"((-35.48026035458241, 148.9959216441171), (-35.14769912406125, 149.2636434410156))",
+        "drop_text": "Australian Capital Territory"
+    },
+    {
+        "location": "central-coast",
+        "location_text": "Central Coast",
+        "latitude": -33.3529519,
+        "longitude": 151.4435474,
+        "viewport":"((-33.5500080274546, 151.2830336237672), (-33.14328589453329, 151.6019626349802))",
+        "drop_text": "New South Wales"
+    },
+    {
+        "location": "northern-nsw",
+        "location_text": "Northern NSW",
+        "latitude": -30.298612,
+        "longitude": 153.1093922,
+        "viewport":"((-30.37917888919825, 153.0390415504324), (-30.21564701112765, 153.1582406537534))",
+        "drop_text": "New South Wales"
+    },
+    {
+        "location": "newcastle",
+        "location_text": "Newcastle",
+        "latitude": -32.9282712,
+        "longitude": 151.7816802,
+        "viewport":"((-33.12045696614801, 151.5550015211093), (-32.83286899537892, 151.8243989609609))",
+        "drop_text": "New South Wales"
+    },
+    {
+        "location": "sydney-metro",
+        "location_text": "Sydney Metro",
+        "latitude": -33.8465088,
+        "longitude": 151.0722137,
+        "viewport":"((-33.85699159352965, 151.0502897845747), (-33.82038384402134, 151.083518682977))",
+        "drop_text": "New South Wales"
+    },
+    {
+        "location": "wollongong",
+        "location_text": "Wollongong",
+        "latitude": -34.4278121,
+        "longitude": 150.8930607,
+        "viewport":"((-34.62860157256394, 150.7439448036556), (-34.25134075098914, 150.973866068939))",
+        "drop_text": "New South Wales"
+    },
+    {
+        "location": "brisbane",
+        "location_text": "Brisbane",
+        "latitude": -27.4697707,
+        "longitude": 153.0251235,
+        "viewport":"((-27.76744089416125, 152.6685227400751), (-26.99684492277586, 153.3178702187602))",
+        "drop_text": "Queensland"
+    },
+    {
+        "location": "gold-coast",
+        "location_text": "Gold Coast",
+        "latitude": -28.016667,
+        "longitude": 153.4,
+        "viewport":"((-28.20031703071094, 153.1865516538155), (-27.70812624627418, 153.5521711326502))",
+        "drop_text": "Queensland"
+    },
+    {
+        "location": "regional-qld",
+        "location_text": "Regional Qld",
+        "latitude": -16.9185514,
+        "longitude": 145.7780548,
+        "viewport":"((-17.03865891626855, 145.6504569871566), (-16.72239395299669, 145.7834315760682))",
+        "drop_text": "Queensland"
+    },
+    {
+        "location": "sunshine-coast",
+        "location_text": "Sunshine Coast",
+        "latitude": -26.65,
+        "longitude": 153.066667,
+        "viewport":"((-26.85334205959798, 152.9969196332883), (-26.35962286591801, 153.1513939349979))",
+        "drop_text": "Queensland"
+    },
+    {
+        "location": "adelaide",
+        "location_text": "Adelaide",
+        "latitude": -34.9284989,
+        "longitude": 138.6007456,
+        "viewport":"((-35.34896993945445, 138.4421298502447), (-34.65256396872677, 138.7801898270823))",
+        "drop_text": "South Australia"
+    },
+    {
+        "location": "hobart",
+        "location_text": "Hobart",
+        "latitude": -42.8821377,
+        "longitude": 147.3271949,
+        "viewport":"((-43.01412256432244, 147.1336604011968), (-42.65537552036029, 147.6133832160388))",
+        "drop_text": "Tasmania"
+    },
+    {
+        "location": "ballarat",
+        "location_text": "Ballarat",
+        "latitude": -37.5621587,
+        "longitude": 143.8502556,
+        "viewport":"((-37.65971717623008, 143.7802309912608), (-37.47518689679477, 143.9252505772241))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "bendigo",
+        "location_text": "Bendigo",
+        "latitude": -36.7570157,
+        "longitude": 144.2793906,
+        "viewport":"((-36.83328504405716, 144.1839040293541), (-36.6410319768202, 144.3807449369987))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "geelong",
+        "location_text": "Geelong",
+        "latitude": -38.1499181,
+        "longitude": 144.3617186,
+        "viewport":"((-38.21679682481449, 144.2906489773359), (-38.04800488517375, 144.448278956327))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "melbourne-metro",
+        "location_text": "Melbourne Metro",
+        "latitude": -37.8100512,
+        "longitude": 144.9281496,
+        "viewport":"((-37.85066724828963, 144.8969812694213), (-37.7754505143463, 144.9913306027726))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "mildura",
+        "location_text": "Mildura",
+        "latitude": -34.2080167,
+        "longitude": 142.1245535,
+        "viewport":"((-34.272769966387, 142.0632380335796), (-34.14871187856433, 142.2039704123131))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "sale",
+        "location_text": "Sale",
+        "latitude": -38.1026004,
+        "longitude": 147.073027,
+        "viewport":"((-38.14702438735878, 147.0092357295898), (-38.06518109732585, 147.1321312569572))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "shepparton",
+        "location_text": "Shepparton",
+        "latitude": -36.383333,
+        "longitude": 145.4,
+        "viewport":"((-36.42606973181361, 145.351905904355), (-36.32071993037172, 145.4319338333774))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "warragul",
+        "location_text": "Warragul",
+        "latitude": -38.1537515,
+        "longitude": 145.9297824,
+        "viewport":"((-38.20336428565061, 145.8754946298631), (-38.09529101293109, 145.9788470550374))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "wodonga",
+        "location_text": "Wodonga",
+        "latitude": -36.1583417,
+        "longitude": 146.8985944,
+        "viewport":"((-36.25962807334323, 146.7024614723324), (-36.02976609505899, 147.0743997289877))",
+        "drop_text": "Victoria"
+    },
+    {
+        "location": "cannington",
+        "location_text": "Cannington",
+        "latitude": -32.0178684,
+        "longitude": 115.9346654,
+        "viewport":"((-32.02960624109578, 115.9213501153589), (-32.00244121227126, 115.9520394261043))",
+        "drop_text": "Western Australia"
+    },
+    {
+        "location": "mandurah",
+        "location_text": "Mandurah",
+        "latitude": -32.5361038,
+        "longitude": 115.7424077,
+        "viewport":"((-32.80188329510433, 115.606343991372), (-32.45561865748089, 115.842299615182))",
+        "drop_text": "Western Australia"
+    },
+    {
+        "location": "osborne-park",
+        "location_text": "Osborne Park",
+        "latitude": -31.9142574,
+        "longitude": 115.8230694,
+        "viewport":"((-31.91714704299647, 115.7994707193459), (-31.88977106638256, 115.8295057837403))",
+        "drop_text": "Western Australia"
+    }
+]

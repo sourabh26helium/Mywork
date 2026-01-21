@@ -1,0 +1,182 @@
+[
+    {
+        "source_code": "ballarat",
+        "code": "HBAL"
+    },
+    {
+        "source_code": "bendigo",
+        "code": "HBED"
+    },
+    {
+        "source_code": "bentleigh",
+        "code": "HBEL"
+    },
+    {
+        "source_code": "braybrook",
+        "code": "HBRA"
+    },
+    {
+        "source_code": "brookvale",
+        "code": "HBRO"
+    },
+    {
+        "source_code": "bundall",
+        "code": "HBUN"
+    },
+    {
+        "source_code": "cabramatta",
+        "code": "HLAN"
+    },
+    {
+        "source_code": "cairns",
+        "code": "HCAI"
+    },
+    {
+        "source_code": "campbelltown",
+        "code": "HCAM"
+    },
+    {
+        "source_code": "canberra",
+        "code": "HCAN"
+    },
+    {
+        "source_code": "capalaba",
+        "code": "HCAP"
+    },
+    {
+        "source_code": "coffs-harbour",
+        "code": "HCOF"
+    },
+    {
+        "source_code": "dandenong",
+        "code": "HDAN"
+    },
+    {
+        "source_code": "east-brisbane",
+        "code": "HEAS"
+    },
+    {
+        "source_code": "fawkner",
+        "code": "HFAW"
+    },
+    {
+        "source_code": "fortitude-valley",
+        "code": "HFOR"
+    },
+    {
+        "source_code": "geelong",
+        "code": "HGEE"
+    },
+    {
+        "source_code": "heatherbrae",
+        "code": "HHEA"
+    },
+    {
+        "source_code": "hervey-bay",
+        "code": "HHER"
+    },
+    {
+        "source_code": "hobart",
+        "code": "HHOB"
+    },
+    {
+        "source_code": "hoppers-crossing",
+        "code": "HHOP"
+    },
+    {
+        "source_code": "ipswich",
+        "code": "HIPS"
+    },
+    {
+        "source_code": "kawana-waters",
+        "code": "HKAW"
+    },
+    {
+        "source_code": "labrador",
+        "code": "HLAB"
+    },
+    {
+        "source_code": "lawnton",
+        "code": "HLAW"
+    },
+    {
+        "source_code": "mandurah",
+        "code": "HMAN"
+    },
+    {
+        "source_code": "mile-end",
+        "code": "HMIL"
+    },
+    {
+        "source_code": "newcastle",
+        "code": "HNEW"
+    },
+    {
+        "source_code": "noosa",
+        "code": "HNOO"
+    },
+    {
+        "source_code": "nunawading",
+        "code": "HNUN"
+    },
+    {
+        "source_code": "osborne-park",
+        "code": "HOSB"
+    },
+    {
+        "source_code": "penrith",
+        "code": "HPEN"
+    },
+    {
+        "source_code": "preston",
+        "code": "HPRE"
+    },
+    {
+        "source_code": "rosebud",
+        "code": "HROS"
+    },
+    {
+        "source_code": "seaford",
+        "code": "HSEA"
+    },
+    {
+        "source_code": "shepparton",
+        "code": "HSHE"
+    },
+    {
+        "source_code": "st-agnes",
+        "code": "HSTA"
+    },
+    {
+        "source_code": "summer-hill",
+        "code": "HSUM"
+    },
+    {
+        "source_code": "taren-point",
+        "code": "HTAR"
+    },
+    {
+        "source_code": "townsville",
+        "code": "HTOW"
+    },
+    {
+        "source_code": "underwood",
+        "code": "HUND"
+    },
+    {
+        "source_code": "warragul",
+        "code": "HWAR"
+    },
+    {
+        "source_code": "west-gosford",
+        "code": "HGOS"
+    },
+    {
+        "source_code": "wodonga",
+        "code": "HWOD"
+    },
+    {
+        "source_code": "wollongong",
+        "code": "HWOL"
+    }
+]

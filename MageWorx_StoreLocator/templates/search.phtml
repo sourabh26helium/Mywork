@@ -1,0 +1,488 @@
+<?php
+$storePageId = $this->getRequest()->getParam('id');
+if (isset($storePageId) && $storePageId!='' && $storePageId!= '338') {
+?>
+
+<?php } ?>
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Search */
+?>
+<div class="mw-sl__search mw-sl__search--choose-location" id="mw-sl__search">
+    <div class="mw-sl__search-form-content">
+        <div class="block-search">
+            <label for="mw-sl_search_text" class="sr-only">Find a store</label>
+            <div class="input-group mb-3">
+                <input name="search_text" class="form-control js-find-store mw-sl_search_text" id="mw-sl_search_text" type="text" placeholder="Enter Location">
+                <div class="input-group-append">
+                    <button class="btn btn-primary find-store-btn" type="button" onclick="searchLocation('by_radius')">Find Store</button>
+                </div>
+            </div>
+            <div id="error-txt" class="error-message px-2 d-none" role="alert">Please enter valid postcode</div>
+        </div>
+        <div class="mw-sl__search__controls text-left">
+            <?php if ($block->isSetToUseCurrentLocation()) : ?>
+                <button type="button" class="btn btn-link btn-location py-0 px-2" id="searchCurrentLocation" onclick="getLocation()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" aria-hidden="true" fill="currentColor"><path d="M.31 9.931h1.614a7.145 7.145 0 006.145 6.145v1.614a.311.311 0 00.31.31h1.242a.311.311 0 00.31-.31v-1.614a7.145 7.145 0 006.145-6.145h1.614a.311.311 0 00.31-.31V8.379a.311.311 0 00-.31-.31h-1.614a7.145 7.145 0 00-6.145-6.145V.31a.311.311 0 00-.31-.31H8.379a.311.311 0 00-.31.31v1.614a7.145 7.145 0 00-6.145 6.145H.31a.311.311 0 00-.31.31v1.242a.311.311 0 00.31.31zM9 3.724A5.276 5.276 0 113.724 9 5.276 5.276 0 019 3.724zm0 0"></path><path d="M11.482 9a2.483 2.483 0 11-2.483-2.483A2.483 2.483 0 0111.482 9zm0 0"></path></svg>
+                    <span>Use my current location</span>
+                </button>
+                <div id="searchCurrentLocationStatus" class="alert alert-danger text-left mt-3" role="alert"></div>
+            <?php endif; ?>
+            <input id="current_location_clicked" name="current_location_clicked" type="hidden" value="0"/>
+            <input id="viewport_custom" name="viewport_custom" type="hidden"/>
+            <input id="mw-sl__lat" name="autocomplete[lat]" type="hidden"/>
+            <input id="mw-sl__lng" name="autocomplete[lng]" type="hidden"/>
+            <input class="field" name="autocomplete[small_city]" id="mw_sublocality_level_1" type="hidden"/>
+            <input class="field" name="autocomplete[city]" id="mw_locality" type="hidden"/>
+            <input class="field" name="autocomplete[region]" id="mw_administrative_area_level_1" type="hidden"/>
+            <input class="field" name="autocomplete[postcode]" id="mw_postal_code" type="hidden"/>
+            <input class="field" name="autocomplete[country_id]" id="mw_country" type="hidden"/>
+            <input class="field" name="search_radius" id="search_radius" type="hidden"/>
+        </div>
+    </div>
+</div>
+<div id="HG_dummyData" class="d-none">
+</div>
+<div class="storetxt"><p><strong>Please select a store by clicking an option below</strong></p></div>
+<script type="text/javascript">
+    var getLocationButton = document.getElementById("searchCurrentLocation");
+    var getLocationButtonStatus = document.getElementById("searchCurrentLocationStatus");
+    var defaultAllStoresBlockHtml;
+    var defaultLocationListBlockHtml;
+
+    var queryString = window.location.search;
+    var urlParams = new URLSearchParams(queryString);
+    if (urlParams.get('search_text')) {
+        document.getElementById('mw-sl_search_text').value = urlParams.get('search_text');
+        setTimeout(function () {
+            searchLocation('by_radius');
+        }, 1000);
+    }
+
+    if (getLocationButtonStatus) {
+        var getLocationButtonText = getLocationButtonStatus.innerHTML;
+    } else {
+        var getLocationButtonText = '';
+    }
+
+    function getCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return "";
+    }
+    function searchLocation(type,selectedRadius='',region='') {
+        jQuery("#error-txt").addClass('d-none');
+        var userEnteredPostCode = jQuery("#mw_postal_code").val()??'';
+        var userEnteredCity = jQuery("#mw_locality").val()??'';
+        document.cookie = 'user_postcode' + "= "+userEnteredPostCode + "; expires=86400; path=/";
+        document.cookie = 'user_city' + "= "+userEnteredCity + "; expires=86400; path=/";
+        var cookieUserPostcode = getCookie('user_postcode');
+        var lat = jQuery("#mw-sl__lat").val();
+        var lng = jQuery("#mw-sl__lng").val();
+        if ((lat && lng) || type === 'by_country') {
+            var data = getData();
+            var currentPage = jQuery('.current_page_type').attr('id');
+            var currentProduct = jQuery('.current_product').attr('id');
+            var defaultRadius = "<?php echo $block->escapeHtml($block->getDefaultRadiusValue())?>"
+            if(selectedRadius)
+                radius=selectedRadius;
+            else
+                radius=defaultRadius;
+            var city = jQuery("#mw_locality").val();
+            if (region == '') {
+                var region_text = jQuery("#mw_administrative_area_level_1").val();
+            } else {
+                if (region == "AU") {
+                    jQuery("#mw_administrative_area_level_1").val("Australia");
+                } else {
+                    jQuery("#mw_administrative_area_level_1").val(region);
+                }
+                var region_text = jQuery("#mw_administrative_area_level_1").val();
+            }
+            jQuery('#search_radius').val(radius);
+            jQuery.ajax({
+                url: '<?= $block->escapeUrl(
+                    $block->getBaseUrl()
+                );?>store_locator/location/searchLocations?_=' + new Date().getTime() + '&type=' + type
+                    + '&current_page=' + currentPage + '&current_products=' + currentProduct+'&radius='+radius+'&region='+region,
+                type: 'POST',
+                isAjax: true,
+                dataType: 'html',
+                showLoader: true,
+                data: data,
+                success: function (xhr, status, errorThrown) {
+                    var result = xhr.split('||');
+                    if(result[0].indexOf("mw-sl__no-stores") > -1)
+                    {
+                        var searched_for_radius = jQuery('#search_radius').val();
+                        var new_radius =  parseInt(searched_for_radius) + parseInt(1000);
+                        jQuery('#search_radius').val(new_radius);
+                        searchLocation('by_radius',new_radius,'');
+                    }
+                    jQuery('#mw-all-stores').html(result[0]);
+                    jQuery('.mw-all-stores').html(result[0]);
+                    jQuery('#HG_dummyData').html(result[0]);
+                    jQuery('#locationPopup #mw-all-stores #store_cms_page').html('');
+                    jQuery('#locationPopup #mw-all-stores #store_all_pages').removeClass('d-none');
+                    jQuery('#current_location_clicked').val(0);
+                    if (jQuery('#mw-store-locator-locations #locator-filter-list').length) //specifically for store and region pages
+                    {
+                        if (jQuery('#load_store_list').length)
+                        {
+                            if(jQuery('#load_store_list').val()=='1')
+                            {
+                                jQuery('#mw-store-locator-locations #locator-filter-list').removeClass('d-none');
+                                jQuery('#mw-all-stores #store_cms_page').removeClass('d-none');
+                            }
+                        }
+
+
+                        if(jQuery("#mw_administrative_area_level_1").val())
+                        {
+                            jQuery("#mw-store-locator-locations #locator-filter-list .mw-sl__stores__current").text(jQuery("#mw_administrative_area_level_1").val());
+                            if(jQuery("#mw_locality").val())
+                                jQuery("#mw-store-locator-locations #locator-filter-list #location-area").text(jQuery("#mw_locality").val());
+                            else
+                                jQuery("#mw-store-locator-locations #locator-filter-list #location-area").text(jQuery("#mw_administrative_area_level_1").val());
+                        }
+                    }
+                    if (result[1] !== undefined) {
+                        jQuery('#mw-all-stores-filters').html(result[1]);
+                        jQuery('.mw-sl__stores__list__item').show();
+                        displayData();
+
+                    }
+                    if (place !== undefined && place.geometry !== undefined)
+                    {
+                        map.setCenter(place.geometry.location);
+                        map.fitBounds(place.geometry.viewport);
+                        map.setZoom(8);
+                        google.maps.event.addListenerOnce(map, 'tilesloaded', function(){
+
+                            var pageIdentifier = jQuery('#locationPopup #page_identifier').val();
+
+                            if(jQuery('#region_page').val())
+                                var pageRegion = jQuery('#region_page').val();
+                            else
+                                var pageRegion = '0';
+
+                            if(pageIdentifier=='mw-store-locator' || pageRegion=='1')
+                            {
+                                if (jQuery('#load_map_here').length) {
+                                    if (jQuery('#load_map_data').length) {
+                                    jQuery('#load_map_data').html(jQuery('#mw-sl-map').html())
+                                    }
+                                }
+                            }
+                        });
+                    }
+                    else
+                    {
+                        if(jQuery('#mw-sl__lat').val() && jQuery('#mw-sl__lng').val()) //specifically for store?location=
+                        {
+                            var lat = parseFloat(jQuery('#mw-sl__lat').val());
+                            var lng = parseFloat(jQuery('#mw-sl__lng').val());
+                            map.setCenter(new google.maps.LatLng(lat, lng));
+
+                            var locality = jQuery('#mw_locality').val();
+                            var zoom =5;
+                            if(locality=='Queensland')
+                                var zoom =5;
+                            if(locality=='Victoria')
+                                var zoom =7;
+                            if(locality=='New South Wales')
+                                var zoom =6;
+                            if(locality=='Tasmania' || locality == 'Western Australia')
+                                var zoom =8;
+                            if(locality=='South Australia' || locality=='Australian Capital Territory')
+                                var zoom =10;
+                            map.setZoom(zoom);
+                        }
+
+                    }
+                    hideSearchForm();
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log('There was an error loading stores\' data.');
+                    console.log(errorThrown);
+                }
+            });
+        } else if (!cookieUserPostcode) {
+            var user_entered_postcode = jQuery("#mw-sl_search_text").val();
+            if (user_entered_postcode && jQuery.isNumeric(user_entered_postcode) && user_entered_postcode.length <5) {
+                jQuery("#error-txt").addClass('d-none');
+                document.cookie = 'user_postcode' + "= "+user_entered_postcode+ "; expires=86400; path=/";
+            } else {
+                    jQuery("#error-txt").removeClass('d-none');
+            }
+        } else {
+            jQuery("#error-txt").removeClass('d-none');
+        }
+    }
+    function displayData(){
+        var getUpdatedBlock = jQuery('#HG_dummyData').find('ul').closest('li');
+        var loopCounter=0;
+        var storeHtml='';
+        jQuery('#HG_dummyData ul li').each(function(i)
+        {
+            if(loopCounter<5)
+            {
+                var getClassName = jQuery(this).attr('class');
+                storeHtml = storeHtml+jQuery(this).html();
+            }
+           loopCounter++;
+        });
+        jQuery(".storeSearch_checkout #storeSearch_checkout_location").html(storeHtml);
+        jQuery("#checkout_pickup").html(jQuery(".storeSearch_checkout").html());
+    }
+    function hideSearchForm() {
+        var searchForm = jQuery('.mw-sl__search');
+        // searchForm.removeClass('mw-sl__search--choose-location');
+        jQuery('.mw-sl__stores').css('height', '530px');
+        jQuery('.mw-sl__content--map-right .mw-sl__stores').css('height', '600px');
+    }
+
+    function getData() {
+        var formValue = function (name, value) {
+            this.name = name;
+            this.value = value;
+        };
+
+        var inputValues = jQuery('#mw-sl__search :input').map(function () {
+            var type = jQuery(this).prop("type");
+            if ((type === "checkbox" || type === "radio") && this.checked) {
+                return new formValue(this.name, jQuery(this).val());
+            } else if (type !== "button" && type !== "submit") {
+                return new formValue(this.name, jQuery(this).val());
+            }
+        });
+
+        var radius = jQuery('#radius-select').val();
+        if (radius !== "0") {
+            jQuery('.mw-sl__search-select-radius').show();
+            jQuery('#mw_location_radius_info').text(radius);
+        } else {
+            jQuery('.mw-sl__search-select-radius').hide();
+        }
+
+        return inputValues;
+    }
+
+    function getLocation() {
+        jQuery('body').loader('show');
+        jQuery('#current_location_clicked').val(1);
+        for (var component in componentForm) {
+            document.getElementById('mw_' + component).value = '';
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                showPosition,
+                locationFail,
+                {
+                    maximumAge: 50000,
+                    timeout: 10000,
+                    enableHighAccuracy: true
+                });
+        } else {
+            getLocationButton.innerHTML = "<?= $block->escapeHtml(
+                __('Geolocation is not supported by this browser.')
+            )?>";
+        }
+    }
+
+    function showPosition(position) {
+        var coordinates = {lat: position.coords.latitude, lng: position.coords.longitude};
+        var currentPositionName = '';
+        place = undefined;
+        geocoder.geocode({'location': coordinates}, function (results, status) {
+
+            if (status === 'OK' && results[0]['formatted_address'] !== undefined) {
+                currentPositionName = results[0]['formatted_address'];
+            } else {
+                currentPositionName = "<?= $block->escapeHtml(
+                    __('My location')
+                )?>";
+            }
+
+            jQuery("#sl__stores__current_place").text(currentPositionName);
+            jQuery("#mw_location_current_location_info").text(currentPositionName);
+            //hideSearchForm();
+            var address = currentPositionName.split(", ");
+            var preparedName = address[address.length - 1];
+            if (address[address.length - 2] !== undefined) {
+                preparedName = address[address.length - 2] + ', ' + preparedName;
+            }
+            if (
+                document.getElementById('mw-sl_search_text2') &&
+                document.getElementById('mw-sl_search_text2').value
+            ) {
+                jQuery("#mw-sl_search_text2").val(preparedName);
+            } else {
+                jQuery("#mw-sl_search_text").val(preparedName);
+                jQuery(".mw-sl_search_text").val(preparedName);
+            }
+
+
+            if(jQuery('#current_location_clicked').val()==1)
+            {
+                for (var i = 0; i < results[0].address_components.length; i++) {
+                    var addressType = results[0].address_components[i].types[0];
+
+                    if(addressType=='administrative_area_level_1')
+                    {
+                        var statename = results[0].address_components[i].long_name;
+                        jQuery('#mw_administrative_area_level_1').val(statename);
+                    }
+                    if(addressType=='locality')
+                    {
+                        var locality = results[0].address_components[i].long_name;
+                        jQuery("#mw_locality").val(locality);
+                    }
+                }
+            }
+
+
+        });
+
+        jQuery("#mw-sl__lat").val(position.coords.latitude);
+        jQuery("#mw-sl__lng").val(position.coords.longitude);
+        jQuery("#searchCurrentLocation").addClass('mw-sl__search__current-location__loaded');
+        jQuery('body').loader('hide');
+    }
+
+    function tryAPIGeolocation(apiKey) {
+        jQuery.post("https://www.googleapis.com/geolocation/v1/geolocate?key=<?=
+            $block->escapeHtml($block->getApiKey())?>", function (success) {
+            showPosition({coords: {latitude: success.location.lat, longitude: success.location.lng}});
+        })
+            .fail(function (err) {
+                console.log(
+                    "<?= $block->escapeHtml(
+                        __('API Geolocation error.')
+                    )?>" + err.responseJSON.error.message);
+                getLocationButtonStatus.innerHTML = getLocationButtonText + "<?= $block->escapeHtml(
+                    __('Could not load geo position.')
+                )?>";
+            });
+    };
+
+    function locationFail(error, apiKey) {
+        switch (error.code) {
+            case error.TIMEOUT:
+                console.log(
+                    "<?= $block->escapeHtml(
+                        __('Browser geolocation timeout error. ')
+                    )?>" + error.message);
+                getLocationButtonStatus.innerHTML = getLocationButtonText + "<?= $block->escapeHtml(
+                    __('Could not load geo position. ')
+                )?>";
+                break;
+            case error.PERMISSION_DENIED:
+                tryAPIGeolocation(apiKey);
+                break;
+            case error.POSITION_UNAVAILABLE:
+            default:
+                console.log(
+                    "<?= $block->escapeHtml(
+                        __('Geo position unavailable.')
+                    )?>" + error.message);
+                getLocationButtonStatus.innerHTML = getLocationButtonText + "<?= $block->escapeHtml(
+                    __('Could not load geo position from browser.')
+                )?>";
+                break;
+        }
+        jQuery('body').loader('hide');
+    };
+
+    function resetSearch() {
+        var defaultRadius = '<?= $block->escapeHtml($block->getDefaultRadiusValue()) ?>';
+        var defaultPlace = '<?= $block->escapeHtml($block->getCurrentPlaceName()) ?>';
+
+        // jQuery('.mw-sl__search').addClass('mw-sl__search--choose-location');
+        jQuery('.mw-sl__stores').css('height', '330px');
+        jQuery('.mw-sl__content--map-right .mw-sl__stores').css('height', '400px');
+
+        jQuery('.mw-sl__search-select-radius').show();
+        jQuery('#mw_location_radius_info').text(defaultRadius);
+        jQuery('#radius-select').val(defaultRadius);
+
+        jQuery('#mw_location_current_location_info').text(defaultPlace);
+        jQuery('#mw-sl_search_text').val(defaultPlace);
+        jQuery('.mw-sl__stores__current').text(defaultPlace);
+
+        jQuery('#mw-all-stores').html(defaultAllStoresBlockHtml);
+        jQuery('#mw-sl__stores__list_block').html(defaultLocationListBlockHtml);
+        jQuery("#searchCurrentLocation").removeClass('mw-sl__search__current-location__loaded');
+
+        map.setCenter(center);
+        map.setZoom(zoom);
+    }
+
+    function resetSearchCMS() {
+        jQuery('#mw-sl__lat').val('');
+        jQuery('#mw-sl__lng').val('');
+        jQuery('#mw_sublocality_level_1').val('');
+        jQuery('#mw_locality').val('');
+        jQuery('#mw_administrative_area_level_1').val('');
+        jQuery('#mw_postal_code').val('');
+        jQuery('#mw_country').val('AU');
+        jQuery('#mw-sl_search_text').val('Australia');
+        jQuery("#mw-store-locator-locations #locator-filter-list .mw-sl__stores__current").text('Australia');
+        jQuery("#mw-store-locator-locations #locator-filter-list #location-area").text('Australia');
+        searchLocation('by_country','','AU');
+    }
+
+    require([
+        "jquery",
+    ], function () {
+
+        jQuery(document).ready(function () {
+            //jQuery('#mw-all-stores').addClass('mw-all-stores');
+
+            var defaultAllStoresBlock = document.getElementById("mw-all-stores");
+            defaultAllStoresBlockHtml = defaultAllStoresBlock.innerHTML;
+
+            var defaultAllStoresBlockCls = document.getElementsByClassName("mw-all-stores");
+            defaultAllStoresBlocClskHtml = defaultAllStoresBlockCls.innerHTML;
+
+            var defaultLocationListBlock = document.getElementById("mw-sl__stores__list_block");
+            defaultLocationListBlockHtml = defaultLocationListBlock.innerHTML;
+        });
+
+        jQuery('#locationPopup #mw-all-stores #store_cms_page').html('');
+        jQuery('#locationPopup #mw-all-stores #store_all_pages').removeClass('d-none');
+        jQuery('#locationPopup .store-locator').html('')
+        jQuery('#locationPopup #locator-filter-list').html('')
+        if (jQuery('#locationPopup #mw-store-locator-locations #cms_locations').length) {
+            jQuery('#locationPopup').trigger('map_initialize');
+        }
+        jQuery('#mw-sl_search_text').bind("enterKey", function (e) {
+            setTimeout(function () {
+                searchLocation('by_radius');
+            }, 500);
+        });
+
+        jQuery('#mw-sl_search_text').keyup(function (e) {
+            if (e.keyCode == 13) {
+                jQuery(this).trigger("enterKey");
+            }
+        });
+
+        jQuery('.find-store-btn').on('click', function () {
+            if (jQuery('.load_store_list').length)
+            {
+                jQuery('.load_store_list').val('1');
+            }
+        });
+    });
+
+</script>

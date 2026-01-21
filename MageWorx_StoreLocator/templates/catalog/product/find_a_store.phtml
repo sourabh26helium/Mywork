@@ -1,0 +1,17 @@
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Catalog\Product\FindAStore */
+$locations = $block->getLocations(); ?>
+<span class="location-button__text">
+    <?php if (count($locations)) : ?>
+        <?= $block->escapeHtml($block->getLocationOnProductText()); ?>
+    <?php else : ?>
+        <p class="h6 heading-normal">This product is unavailable at any store</p>
+        <?= $block->escapeHtml($block->getLocationOnProductNotAvailableText()); ?>
+    <?php endif; ?>
+</span>
+<?php /** @var \MageWorx\Locations\Api\Data\LocationInterface $location */
+if (count($locations) && $block->isLocationsNamesEnabled()) : ?>
+    <span class="location-button__places">
+        <?= $block->escapeHtml($block->getLocationsPlaces()); ?>
+    </span>
+<?php endif; ?>

@@ -1,0 +1,42 @@
+{
+    "mageworx_location_review": {
+        "column": {
+            "entity_id": true,
+            "location_id": true,
+            "star_rating": true,
+            "review_count": true,
+            "review_url": true
+        },
+        "index": {
+            "MAGEWORX_LOCATION_REVIEW_LOCATION_ID": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    },
+    "store_location_group": {
+        "column": {
+            "group_id": true,
+            "location_code": true,
+            "location_link": true
+        },
+        "constraint": {
+            "PRIMARY": true,
+            "STORE_LOCATION_GROUP_LOCATION_CODE_LOCATION_LINK": true
+        }
+    },
+    "mageworx_location_custom_data": {
+        "column": {
+            "id": true,
+            "location": true,
+            "location_text": true,
+            "latitude": true,
+            "longitude": true,
+            "viewport": true,
+            "drop_text": true
+        },
+        "constraint": {
+            "PRIMARY": true
+        }
+    }
+}

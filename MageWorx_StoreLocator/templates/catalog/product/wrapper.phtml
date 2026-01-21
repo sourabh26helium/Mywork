@@ -1,0 +1,65 @@
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Locations */
+$helper = $this->helper('MageWorx\StoreLocator\Helper\Data'); 
+$prod = $helper->getCurrentProduct();
+?>
+<?php if ($prod && $prod->isSaleable()) { ?>
+    <input type="hidden" name="curr_prod_id" id="curr_prod_id" value="<?php echo $prod->getSku()?>">
+    <div class="card">
+        <div class="card-header" id="headingZero">
+            <h2 class="mb-0">
+                <button class="btn btn-link btn-block text-left" type="button" data-toggle="collapse" data-target="#collapseZero" aria-expanded="true" aria-controls="collapseZero">
+                    Find In Store
+                    <svg xmlns="http://www.w3.org/2000/svg" width="9.58" height="5" viewBox="0 0 25 14" aria-hidden="true"><path d="M.783.788l11.5 12 11.5-12" fill="none" stroke="currentColor" stroke-width="2.8"/></svg>
+                </button>
+            </h2>
+        </div>
+        <div id="collapseZero" class="collapse show" aria-labelledby="headingZero" data-parent="#productAccordion">
+            <div class="card-body">
+                <?php
+                /** @var $block \MageWorx\StoreLocator\Block\Catalog\Product\FindAStore */
+                $locations = $block->getLocations();
+                if ($block->isLocationOnProductEnabled()) :?>
+                    <?php if ($block->isDetailedStoresDisplayMode()) : ?>
+                        <div data-mage-init='{"findAStoreUpdate": {"target": "#find_a_store", "product":"<?=
+                        $escaper->escapeHtmlAttr($block->getProductId()) ?>", "dataUrl": "<?= /* @noEscape */ $block->getBaseUrl(); ?>"}}'>
+                            <div id="find_a_store">
+                                <div class="location-button__select_option">
+                                    <?= $escaper->escapeHtml(__('Available stores are loading ...')); ?>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-block-wmax btn-find-store btn-outline-light my-4" id="showLocationButton" onclick="showLocationModal();">
+                                    <span>Find another store</span>
+                                </button>
+                            </div>
+                        </div>
+                    <?php else : ?>
+                        <div data-mage-init='{"findAStoreUpdate": {"target": "#find_a_store", "product":"<?=
+                        $escaper->escapeHtmlAttr($block->getProductId()) ?>", "dataUrl": "<?= /* @noEscape */ $block->getBaseUrl(); ?>"}}'>
+                            <div id="find_a_store">
+                                <div class="location-button__select_option">
+                                    <?= $escaper->escapeHtml(__('Available stores are loading ...')); ?>
+                                </div>
+                            </div>
+                            <div class="d-flex">
+                                <button type="button" class="btn btn-block-wmax btn-find-store btn-outline-light my-4" id="showLocationButton" onclick="showLocationModal();">
+                                    <span>Find another store</span>
+                                </button>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        function showLocationModal()
+        {
+            if (document.getElementById('setLocationToggler')) {
+                document.getElementById('setLocationToggler').click();
+            }
+        }
+    </script>
+<?php } ?>

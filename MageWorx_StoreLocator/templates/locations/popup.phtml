@@ -1,0 +1,86 @@
+<?php
+/** @var $block \MageWorx\StoreLocator\Block\Popup */
+$blockLocObj= $block->getLayout()->createBlock('\MageWorx\StoreLocator\Block\Locations');
+
+$objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+$cmsPage = $objectManager->get('\Magento\Cms\Model\Page');
+$pageIdentifier = $cmsPage->getIdentifier();
+?>
+<div class="minicart-wrapper" id="findInStoreContainer">
+    <div class="block block-minicart d-flex" id="findInStorePopup" hidden>
+        <div class="sidebar-heading px-5">
+            <div class="h3">
+                <span>Find In Store</span>
+            </div>
+            <button class="btn btn-link p-0 close" onclick="closeFindInStore()">
+                <span class="sr-only">Close</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20.414" height="20.414" viewBox="0 0 20.41 20.41" aria-hidden="true" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M.707.707l19 19M.707 19.707l19-19"></path></svg>
+            </button>
+        </div>
+        <div id="locationPopup" class="h-100">
+
+            <div class="modal-content h-100">
+
+                <input type="hidden" name="page_identifier" id="page_identifier" value="<?php echo $pageIdentifier?>">
+                <div id="mw-store-locator-locations" class="mw-store-locator-locations mw-sl__stores__wrapper h-100 flex-column d-flex">
+                    <?php
+                        if($this->getRequest()->getFullActionName()=='cms_page_view')
+                        {
+                        ?>
+                            <div class="mw-sl__content mw-sl__content--map-top mw-sl__content--map-top-with-map mw-sl__content--map-bottom" id="cms_locations">
+                                <div class="mw-left-block h-100">
+                                    <div class="mw-sl__stores__wrapper flex-column">
+                                        <div class="mw-list_left_block"><div class="mw-search_box_for_list"><?= $blockLocObj->getSearchBoxHtml() ?></div></div>
+                                        <div class="sidebar-nav w-100">
+                                            <div class="nav nav-tabs" role="tablist">
+                                                <a class="nav-link active" id="list-tab" data-toggle="tab" href="#listpopup" role="tab" aria-controls="list" aria-selected="true">View List</a>
+                                                <a class="nav-link" id="profile-tab" data-toggle="tab" href="#load_map_here" role="tab" aria-controls="load_map_here" aria-selected="false">View Map</a>
+                                            </div>
+                                        </div>
+                                        <div class="tab-content flex-grow-1 d-flex flex-column">
+                                            <div class="tab-pane h-100 fade show active flex-grow-1 flex-column" id="listpopup" role="tabpanel" aria-labelledby="list-tab">
+                                                <div id="mw-all-stores" class="h-100 mw-all-stores">
+                                                    <?= $block->getLocationsHtml() ?>
+                                                </div>
+                                            </div>
+                                            <div class="store-map tab-pane h-100 fade flex-grow-1 flex-column" id="load_map_here" role="tabpanel" aria-labelledby="map-tab">
+                                               <div class="mw-sl__map store-map" id="load_map_data"><?php echo  $blockLocObj->getLocationsMapHtml(); ?></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                    <?php }else{ ?>
+
+                        <?= /* @noEscape */ $block->getLocationsHtml(); ?>
+                    <?php } ?>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function closeFindInStore() {
+        var findInStoreToggle = document.getElementById('setLocationToggler');
+        var findInStoreContainer = document.getElementById('findInStoreContainer');
+        var findInStorePopup = document.getElementById('findInStorePopup');
+        findInStoreContainer.classList.remove('active');
+        findInStoreToggle.classList.remove('active');
+        setTimeout(function() {
+            findInStorePopup.hidden = true;
+        }, 200);
+    }
+</script>
+<script type="text/javascript">
+    require(["jquery"], function ($) {
+        $(document).ready(function () {
+            $('#list-tab').on('click', function(e) {
+                $("#locationPopup .mw-sl__stores__wrapper").removeClass('h-100');
+            });
+            $('#profile-tab').on('click', function(e) {
+                $("#locationPopup .mw-sl__stores__wrapper").addClass('h-100')
+            });
+        });
+    });
+</script>

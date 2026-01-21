@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<schema xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="urn:magento:framework:Setup/Declaration/Schema/etc/schema.xsd">
+    <table name="mageworx_location_review" resource="default" engine="innodb" comment="Location Reviews">
+        <column xsi:type="int" name="entity_id" unsigned="true" nullable="false" identity="true"
+                comment="Entity ID"/>
+        <column xsi:type="int" name="location_id" unsigned="true" nullable="false"
+                identity="false" default="0" comment="Location ID"/>
+        <column xsi:type="decimal" name="star_rating" precision="2" scale="1" unsigned="true" nullable="false"
+                default="0" comment="Star Rating"/>
+        <column xsi:type="int" name="review_count" unsigned="true" nullable="false"
+                identity="false" default="0" comment="Number of Reviews"/>
+        <column xsi:type="text" name="review_url" nullable="true" comment="Google Reviews Page Link" />
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="entity_id"/>
+        </constraint>
+        <index referenceId="MAGEWORX_LOCATION_REVIEW_LOCATION_ID" indexType="btree">
+            <column name="location_id"/>
+        </index>
+    </table>
+    <table name="store_location_group" resource="default" engine="innodb" comment="Store Location Groups">
+        <column xsi:type="int" name="group_id" unsigned="true" nullable="false" identity="true"
+                comment="Group ID"/>
+        <column xsi:type="varchar" name="location_code" length="255" nullable="false"
+                comment="Location Code"/>
+        <column xsi:type="varchar" name="location_link" length="255" nullable="false"
+                comment="Linked Location Code"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="group_id"/>
+        </constraint>
+        <constraint xsi:type="unique" referenceId="STORE_LOCATION_GROUP_LOCATION_CODE_LOCATION_LINK">
+            <column name="location_code"/>
+            <column name="location_link"/>
+        </constraint>
+    </table>
+    <table name="mageworx_location_custom_data" resource="default" engine="innodb" comment="Latitude and Longitudes for locations">
+        <column xsi:type="int" name="id" unsigned="true" nullable="false" identity="true"
+                comment="ID"/>
+        <column xsi:type="varchar" name="location" length="255" nullable="false"
+                comment="Location"/>
+        <column xsi:type="varchar" name="location_text" length="255" nullable="false"
+                comment="Location Text"/>
+        <column xsi:type="decimal" name="latitude" scale="14" precision="18" nullable="false"
+                comment="Latitude"/>
+        <column xsi:type="decimal" name="longitude" scale="14" precision="18" nullable="false"
+                comment="Longitude"/>
+        <column xsi:type="varchar" name="viewport" length="255" nullable="false"
+                comment="Viewport"/>
+        <column xsi:type="varchar" name="drop_text" length="255" nullable="false"
+                comment="Drop Text"/>
+        <constraint xsi:type="primary" referenceId="PRIMARY">
+            <column name="id"/>
+        </constraint>
+    </table>
+</schema>

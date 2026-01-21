@@ -1,0 +1,148 @@
+<div class="minicart-wrapper" id="setLocationContainer">
+    <div class="block block-minicart set-location-form" id="setLocationForm" hidden>
+
+    
+        <div class="sidebar-heading px-5">
+            <h2>
+                <span>Set Your Location</span>
+            </h2>
+            <button class="btn btn-link p-0 close" onclick="closeSetLocation()">
+                <span class="sr-only">Close</span>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20.414" height="20.414" viewBox="0 0 20.41 20.41" aria-hidden="true" fill="none" stroke="#fff" stroke-linecap="round" stroke-linejoin="round"><path d="M.707.707l19 19M.707 19.707l19-19"></path></svg>
+            </button>
+        </div>
+
+
+        <form action="/stores" class="block-search w-100 pt-5 px-5 position-static">
+            <p class="mb-4 pb-3"><b>Set your location to show stock availability in store, and calculate shipping costs</b></p>
+            <label for="mw-sl_search_text2" class="sr-only">Find a store</label>
+            <div class="input-group mx-auto mb-3">
+                <input name="search_text" class="form-control js-find-store" id="mw-sl_search_text2" type="text" placeholder="Enter Location" autocomplete="off">
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit">Find Store</button>
+                </div>
+            </div>
+            <!--
+            Made these hidden coz it conflicts with functionality of find store on product page, need to find way to make both scripts working together
+            <input id="mw-sl__lat" name="autocomplete[lat]" type="text"/>
+            <input id="mw-sl__lng" name="autocomplete[lng]" type="text"/>
+            <input class="field" name="autocomplete[small_city]" id="mw_sublocality_level_1" type="text"/>
+            <input class="field" name="autocomplete[city]" id="mw_locality" type="text"/>
+            <input class="field" name="autocomplete[region]" id="mw_administrative_area_level_1" type="text"/>
+            <input class="field" name="autocomplete[postcode]" id="mw_postal_code" type="text"/>
+            <input class="field" name="autocomplete[country_id]" id="mw_country" type="text"/>-->
+        </form>
+    </div>
+</div>
+
+
+<script>
+    function closeSetLocation() {
+        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+        var setLocationContainer = document.getElementById('setLocationContainer');
+        var setLocationForm = document.getElementById('setLocationForm');
+        var setLocationToggler;
+        setLocationContainer.classList.remove('active');
+
+        if (mediaQuery.matches) {
+            setLocationToggler = document.getElementById('setLocationToggler');
+        } else {
+            setLocationToggler = document.getElementById('setLocationTogglerMob');
+        }
+
+        setTimeout(function() {
+            setLocationForm.hidden = true;
+            setLocationToggler.classList.remove('active');
+        }, 200);
+    }
+
+    // Making the account slider toggle open like the mobile navbar does
+    function toggleSetLocation() {
+        const mediaQuery = window.matchMedia('(min-width: 1024px)');
+        var setLocationContainer = document.getElementById('setLocationContainer');
+        var setLocationForm = document.getElementById('setLocationForm');
+        var setLocationToggler;
+        var setLocationField = document.getElementById('mw-sl_search_text2');
+
+        if (mediaQuery.matches) {
+            setLocationToggler = document.getElementById('setLocationToggler');
+        } else {
+            setLocationToggler = document.getElementById('setLocationTogglerMob');
+        }
+        console.log(setLocationToggler);
+
+        if (!setLocationContainer.classList.contains('active')) {
+            setLocationForm.hidden = false;
+            setTimeout(function() {
+                setLocationField.focus();
+                setLocationContainer.classList.add('active');
+                setLocationToggler.classList.add('active');
+            }, 1);
+        } else {
+            setLocationContainer.classList.remove('active');
+            setTimeout(function() {
+                setLocationForm.hidden = true;
+                setLocationToggler.classList.remove('active');
+            }, 200);
+        }
+    }
+
+    require([
+        "jquery",
+        'mage/adminhtml/events',
+        "https://maps.googleapis.com/maps/api/js?key=<?= $block->escapeHtml($block->getApiKey())?>&libraries=places&language=en&region=AU&sensor=true&v=3",
+        "MageWorx_StoreLocator/js/maps/autocomplete"
+    ], function () {
+        initAutocomplete({country: ['au']});
+        geocoder = new google.maps.Geocoder();
+
+        jQuery('#mw-sl_search_text2').bind("enterKey", function (e) {
+            setTimeout(function () {
+                searchLocation('by_radius', true);
+            }, 500);
+        });
+
+        jQuery('#mw-sl_search_text2').keyup(function (e) {
+            if (e.keyCode == 13) {
+                jQuery(this).trigger('enterKey');
+            }
+        });
+    });
+
+    function searchLocation(type, isGlobal) {
+        var data = getData();
+        var currentPage = jQuery('.current_page_type').attr('id');
+        var currentProduct = jQuery('.current_product').attr('id');
+        jQuery.ajax({
+            url: '<?= $block->escapeUrl(
+                $block->getBaseUrl()
+            );?>store_locator/location/searchLocations?_=' + new Date().getTime() + '&type=' + type
+                + '&current_page=' + currentPage + '&current_products=' + currentProduct,
+            type: 'POST',
+            isAjax: true,
+            dataType: 'html',
+            showLoader: true,
+            data: data,
+            success: function (xhr, status, errorThrown) {
+                var result = xhr.split('||');
+                if (!isGlobal) {
+                    jQuery('#mw-all-stores').html(result[0]);
+                    if (result[1] !== undefined) {
+                        jQuery('#mw-all-stores-filters').html(result[1]);
+                        jQuery('.mw-sl__stores__list__item').show();
+                    }
+                }
+                if (place !== undefined && place.geometry !== undefined) {
+                    map.setCenter(place.geometry.location);
+                    map.fitBounds(place.geometry.viewport);
+                }
+
+                hideSearchForm();
+            },
+            error: function (xhr, status, errorThrown) {
+                console.log('There was an error loading stores\' data.');
+                console.log(errorThrown);
+            }
+        });
+    }
+</script>

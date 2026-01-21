@@ -1,0 +1,84 @@
+<?php
+/** @var $block \Highgrove\StoreLocator\Block\LocationInfo */
+/** @var $location \MageWorx\Locations\Api\Data\LocationInterface $location */
+$location = $block->getLocation(); 
+$locationNameReplaced = str_replace('Highgrove Bathrooms - ', '', $block->escapeHtml($block->getLocationName($location) ));
+
+?>
+<li class="22222 stores-list-item location-info-block_<?= $block->escapeHtml($location->getId()) ?>" id='location-info-block_<?= $block->escapeHtml($location->getId()) ?>'>
+    <div class="d-none-store-locator d-none">
+        <svg xmlns="http://www.w3.org/2000/svg" width="42" height="42" viewBox="0 0 42 42" aria-hidden="true" class="mr-2 mr-sm-3"><circle cx="21" cy="21" r="21" fill="#345ea9"></circle><path d="M15.622 14.658v3.893a2.96 2.96 0 012.358-1.152 3.21 3.21 0 011.26.22 2.68 2.68 0 01.823.658c.206.272.34.593.384.932.105.486.142.985.1 1.48v4.5h-2.03v-4a4.77 4.77 0 00-.11-1.535 1.26 1.26 0 00-.384-.548 1.534 1.534 0 00-.713-.165 1.7 1.7 0 00-.928.217 1.32 1.32 0 00-.548.768 3.4 3.4 0 00-.219 1.426V25.2h-2.033V14.658h2.03m6.042 10.528V14.658h2.03v3.784a2.85 2.85 0 012.248-1.042 2.96 2.96 0 012.3.987 4.17 4.17 0 01.877 2.906 4.23 4.23 0 01-.932 3.016 2.85 2.85 0 01-2.248 1.042 2.52 2.52 0 01-1.261-.329 3.73 3.73 0 01-1.152-.932v1.1h-1.86m2.03-4a2.85 2.85 0 00.384 1.755 1.59 1.59 0 001.371.823 1.42 1.42 0 001.152-.548 2.74 2.74 0 00.494-1.81 2.96 2.96 0 00-.494-1.919 1.59 1.59 0 00-2.413 0 2.52 2.52 0 00-.494 1.7zm5.754 9.04h-17A4.5 4.5 0 018 25.734V14h2.96v11.734a1.535 1.535 0 001.48 1.536h17a1.534 1.534 0 001.48-1.535V14h3.016v11.734a4.5 4.5 0 01-4.5 4.5" fill="#fff"></path></svg>
+    </div>
+    <div class="item-container pt-0 w-100 position-relative <?php
+        if ($locationAvailable = $block->isLocationAvailable($location)) {
+            echo 'js-item-' . $block->escapeHtml($location->getId());
+        }?>">
+        <?php if ($block->isCheckout()) : 
+            $objectManager = \Magento\Framework\App\ObjectManager::getInstance();
+            $cookieManager = $objectManager->get('Magento\Framework\Stdlib\CookieManagerInterface');
+            $cookieValue = $cookieManager->getCookie('mageworx_location_id');
+
+
+            ?>
+            <div class="custom-control custom-radio">
+                <?php if ($locationAvailable = $block->isLocationAvailable($location)) : ?>
+                    <input type="radio" <?php echo $cookieValue==$block->escapeHtml($location->getId())?'checked':'' ?> name="HGpickStore" class="custom-control-input hg-sl__store__select mw-sl__store__select hg_store <?php echo $cookieValue==$block->escapeHtml($location->getId())?'active':'' ?>"  id="store<?= $block->escapeHtml($location->getId()) ?>" data-bind="<?= $block->escapeHtml($location->getId()) ?>">
+                <?php else : ?>
+                   <input type="radio" <?php echo $cookieValue==$block->escapeHtml($location->getId())?'checked':'' ?> name="HGpickStore" class="custom-control-input mw-sl__store__select__gray hg_store <?php echo $cookieValue==$block->escapeHtml($location->getId())?'active':'' ?>"  id="store<?= $block->escapeHtml($location->getId()) ?>" data-bind="<?= $block->escapeHtml($location->getId()) ?>">
+                <?php endif; ?>
+                <label class="custom-control-label" for="store<?= $block->escapeHtml($location->getId()) ?>">
+                    <span>
+                        <address class="mw-sl__store__info pl-0">
+                            <span class="mw-sl__store__info__name"><?= $block->escapeHtml($block->getLocationName($location) ); ?></span>
+                            <br/>
+                            <span class="force-font-weight-normal"><?= $block->escapeHtml($location->getAddress()); ?>, <?= $block->escapeHtml($location->getCity()); ?>, <?= $location->getRegion(
+                            ) == \MageWorx\Locations\Model\Source\Region::NO_REGIONS ? '' : $block->escapeHtml(
+                                $location->getRegion()
+                            ); ?>, <?= $block->escapeHtml(
+                                $location->getPostcode()
+                            ); ?>
+                            </span>
+                        </address>
+                    </span>
+                </label>
+            </div>
+        <?php else : ?>
+            
+            <address class="mw-sl__store__info pl-0"><span
+                        class="mw-sl__store__info__name"><?= $block->escapeHtml(
+                            $block->getLocationName($location)
+                        ); ?></span>
+                <br/><?= $block->escapeHtml($location->getAddress()); ?>, <?= $block->escapeHtml($location->getCity()); ?>,
+                <br/>
+                <span class="force-font-weight-normal"><?= $location->getRegion(
+                ) == \MageWorx\Locations\Model\Source\Region::NO_REGIONS ? '' : $block->escapeHtml(
+                    $location->getRegion()
+                ); ?>, <?= $block->escapeHtml(
+                    $location->getPostcode()
+                ); ?>
+                </span>
+            </address>
+            <div class="item-append mt-2">
+                <?php if ($location->getPhoneNumber()) { ?>
+                    <a class="btn btn-link btn-sm py-2 gtmCall" data-id="<?php echo $locationNameReplaced?>"
+                        href="tel:<?= $block->escapeUrl($location->getPhoneNumber()); ?>"
+                        ><?= $block->escapeUrl($location->getPhoneNumber()); ?></a>
+                <?php } ?>
+                <a class="btn btn-link btn-sm py-2 gtmDirections" data-id="<?php echo $locationNameReplaced?>"
+                    href="<?= $block->escapeUrl($block->getRouteUrl($location)); ?>"
+                    target="_blank"><?= $block->escapeHtml(__('Get Directions')) ?></a>
+            </div>
+        <?php endif; ?>
+
+        <a href="<?php echo $location->getPageFullUrl(); ?>" class="btn btn-secondary btn-view-store gtmDetails" data-id="<?php echo $locationNameReplaced?>">View Store</a>
+    
+    </div>
+    <?php if ($block->isCheckout()) : ?>
+        <?php if (!$locationAvailable) : ?>
+            <div  class="mw-sl__store__not-available">
+                <?= $block->escapeHtml(__('Requested quantity for added product(s) is not available'))?>
+            </div>
+        <?php endif; ?>
+    <?php endif; ?>
+    <div id="location_details_<?= $block->escapeHtml($location->getId()) ?>" class="location_details"></div>
+</li>

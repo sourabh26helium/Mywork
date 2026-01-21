@@ -1,0 +1,182 @@
+[
+    {
+        "code": "HBAL",
+        "place_id": "ChIJ42jwRaFE0WoRDnc1peE4lRI"
+    },
+    {
+        "code": "HBED",
+        "place_id": "ChIJ3wSadH5X12oR9JdmqOZoWkE"
+    },
+    {
+        "code": "HBEL",
+        "place_id": "ChIJNWwkFCJv1moRabT4p2kCsSE"
+    },
+    {
+        "code": "HBRA",
+        "place_id": "ChIJjWIURjxe1moR1nCZYBKmb38"
+    },
+    {
+        "code": "HBRO",
+        "place_id": "ChIJn-fVzmCqEmsRnWwK656kD6U"
+    },
+    {
+        "code": "HBUN",
+        "place_id": "ChIJd3nkUjwFkWsRmzDbJ7lgrbU"
+    },
+    {
+        "code": "HLAN",
+        "place_id": "ChIJQ9G6hlSXEmsR3vA8QmM_NE8"
+    },
+    {
+        "code": "HCAI",
+        "place_id": "ChIJH6McSwNkeGkR7SDhI-6ooBY"
+    },
+    {
+        "code": "HCAM",
+        "place_id": "ChIJhbATbwzvEmsRueYqUatksdc"
+    },
+    {
+        "code": "HCAN",
+        "place_id": "ChIJNeCkHTZMFmsRXb6XWX0M5do"
+    },
+    {
+        "code": "HCAP",
+        "place_id": "ChIJJw-k-yddkWsRSsL2CzBslpM"
+    },
+    {
+        "code": "HCOF",
+        "place_id": "ChIJWT7DGokPnGsRfoaHTspLvF8"
+    },
+    {
+        "code": "HDAN",
+        "place_id": "ChIJ_x9AgWsU1moRIcEjPVK6rH0"
+    },
+    {
+        "code": "HEAS",
+        "place_id": "ChIJZZgB5n2ek2sRI0zBUlIfl7Q"
+    },
+    {
+        "code": "HFAW",
+        "place_id": "ChIJCe2Vtxhb1moRN6EO3LAXsJw"
+    },
+    {
+        "code": "HFOR",
+        "place_id": "ChIJV47DGL5ZkWsRHG4JRa-5xDg"
+    },
+    {
+        "code": "HGEE",
+        "place_id": "ChIJFRfoEgIU1GoRk3rUQSf3Ggs"
+    },
+    {
+        "code": "HHEA",
+        "place_id": "ChIJZbspRy9rc2sRLI6lk56qVb4"
+    },
+    {
+        "code": "HHER",
+        "place_id": "ChIJzZuUgtV_62sRWoYn77ylwfQ"
+    },
+    {
+        "code": "HHOB",
+        "place_id": "ChIJsZLpHqV1bqoRC1-FKBklBD8"
+    },
+    {
+        "code": "HHOP",
+        "place_id": "ChIJCU6kAcKI1moRUnlGnEU0rOI"
+    },
+    {
+        "code": "HIPS",
+        "place_id": "ChIJ_fINrEi0lmsRYlR0hLx0rd8"
+    },
+    {
+        "code": "HKAW",
+        "place_id": "ChIJcea3E_h1k2sRPQv0MrWiHps"
+    },
+    {
+        "code": "HLAB",
+        "place_id": "ChIJV91xQkoQkWsRXeaUIkI-BWw"
+    },
+    {
+        "code": "HLAW",
+        "place_id": "ChIJzdkeB5r8k2sRQg4du1jUWVI"
+    },
+    {
+        "code": "HMAN",
+        "place_id": "ChIJya5U-LR_MioRwXRiv6EfQeI"
+    },
+    {
+        "code": "HMIL",
+        "place_id": "ChIJ64g-e27PsGoRM_TKsN5svOQ"
+    },
+    {
+        "code": "HNEW",
+        "place_id": "ChIJZetxqXs9c2sRRRjuKsAbqJA"
+    },
+    {
+        "code": "HNOO",
+        "place_id": "ChIJGQGZ7B5pk2sRNiKPmqYtRhc"
+    },
+    {
+        "code": "HNUN",
+        "place_id": "ChIJiU_Px9k41moR6Jw5TB5cXPk"
+    },
+    {
+        "code": "HOSB",
+        "place_id": "ChIJq6o60ZuvMioRse8iX_1W8uw"
+    },
+    {
+        "code": "HPEN",
+        "place_id": "ChIJ2zQ6gq-PEmsRF_gg9uJRUtU"
+    },
+    {
+        "code": "HPRE",
+        "place_id": "ChIJFTfI-09E1moRKQrBkjcI5UU"
+    },
+    {
+        "code": "HROS",
+        "place_id": "ChIJ0-tsjZPJ1WoR3nhaaFI0AfM"
+    },
+    {
+        "code": "HSEA",
+        "place_id": "ChIJNaXmeSAlsWoR2QKaXk-hqo0"
+    },
+    {
+        "code": "HSHE",
+        "place_id": "ChIJJW7wYsWG2GoRswRl6mysEZ4"
+    },
+    {
+        "code": "HSTA",
+        "place_id": "ChIJU95KUbi0sGoR5MKlFS67yIU"
+    },
+    {
+        "code": "HSUM",
+        "place_id": "ChIJmfbeVae6EmsRD1htnqqm9Tg"
+    },
+    {
+        "code": "HTAR",
+        "place_id": "ChIJgyiYkA24EmsRcVIa467UXC4"
+    },
+    {
+        "code": "HTOW",
+        "place_id": "ChIJ0YRlgwX51WsRLO74oTgVfy8"
+    },
+    {
+        "code": "HUND",
+        "place_id": "ChIJBw37cYZDkWsRwPbcF1FplGw"
+    },
+    {
+        "code": "HWAR",
+        "place_id": "ChIJQ7pPno-VKWsRIFb6b-G43j4"
+    },
+    {
+        "code": "HGOS",
+        "place_id": "ChIJ8XKVRrLKcmsRctMsYGiRFLY"
+    },
+    {
+        "code": "HWOD",
+        "place_id": "ChIJ8a-44cNYIWsRfkLiQVO80-Y"
+    },
+    {
+        "code": "HWOL",
+        "place_id": "ChIJT0Xk6BkXE2sR8Gm8ZyKtgzI"
+    }
+]

@@ -1,0 +1,46 @@
+<?php
+/** 
+ * Store locator main template
+ * @var $block \MageWorx\StoreLocator\Block\Locations */
+?>
+<?= /* @noEscape */$block->getGoogleMapScript(); ?>
+    <div class="store-locator">
+        <div class="container">
+
+            <div class="mw-sl__content mw-sl__content--map-top right-tile col-12 col-lg-7 position-relative store-locator-form">
+                <?php if($this->getRequest()->getFullActionName()=='mageworx_store_locator_location_updatemainpage' || $this->getRequest()->getFullActionName()=='mageworx_locationpages_locationList_view'){?>
+                    <?php echo  $block->getLocationsMapHtml(); ?>
+                <?php } ?>
+            </div>
+
+            <div class="mw-sl__stores__wrapper flex-column left-tile col-12 col-lg-5">
+                <div class="h2 mb-4">Find a store near you </div>
+                <input type="hidden" name="load_store_list" id="load_store_list" class="load_store_list" value="0">
+                <?php if ($block->getFilterType() !== 'list_without_map') : ?>
+                <?= $block->getSearchBoxHtml() ?>
+                <?php endif; ?>
+            </div>  
+        </div>
+    </div>
+
+        <?= $block->getLocationsFilterHtmlCMS() ?>
+
+        <div class="tab-content flex-grow-1" id="store-locator-result-block">
+        <div class="tab-pane h-100 fade show active" id="list" role="tabpanel" aria-labelledby="list-tab">
+            <div id="mw-all-stores" class="h-100 mw-all-stores">
+                <?php echo $block->getLocationsListHtml() ?>
+            </div>
+        </div>
+        <!--div class="store-map tab-pane h-100 fade" id="map" role="tabpanel" aria-labelledby="map-tab">
+            <?php //echo $block->getLocationsMapHtml(); ?>
+        </div-->
+    </div>
+    
+
+<script type="text/javascript">
+    var mwLocations = JSON.parse('<?= $block->escapeJs(json_encode($block->getLocationsIds()))?>');
+    var availableLocations = JSON.parse('<?= $block->escapeJs(json_encode($block->getAvailableLocationsIds()))?>');
+</script>
+
+
+

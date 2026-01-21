@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <preference for="MageWorx\StoreLocator\Block\Catalog\Product\FindAStore"
+                type="Highgrove\StoreLocator\Block\Catalog\Product\FindAStore" />
+    <preference for="MageWorx\StoreLocator\Block\LocationInfo"
+                type="Highgrove\StoreLocator\Block\LocationInfo" />
+    <type name="Highgrove\StoreLocator\Block\LocationInfo">
+        <arguments>
+            <argument name="cookieManager" xsi:type="object">Magento\Framework\Stdlib\CookieManagerInterface</argument>
+            <argument name="registry" xsi:type="object">Magento\Framework\Registry</argument>
+        </arguments>
+    </type>
+    <preference for="MageWorx\StoreLocator\Block\LocationsList"
+                type="Highgrove\StoreLocator\Block\LocationsList" />
+    <preference for="MageWorx\StoreLocator\Block\Locations"
+                type="Highgrove\StoreLocator\Block\Locations" />
+    <preference for="Highgrove\StoreLocator\Api\ReviewRepositoryInterface"
+                type="Highgrove\StoreLocator\Model\ResourceModel\ReviewRepository" />
+    <preference for="MageWorx\StoreLocator\Controller\Location\SearchLocations"
+                type="Highgrove\StoreLocator\Controller\Location\SearchLocations" />
+    <preference for="MageWorx\Locations\Model\ResourceModel\Location\Collection"
+                type="Highgrove\StoreLocator\Model\ResourceModel\Location\Collection" />
+    <preference for="Highgrove\StoreLocator\Api\Data\ReviewInterface"
+                type="Highgrove\StoreLocator\Model\Review" />
+    <preference for="Highgrove\StoreLocator\Api\Data\StoreLocationGroupInterface"
+                type="Highgrove\StoreLocator\Model\StoreLocationGroup" />
+    <preference for="Highgrove\StoreLocator\Api\StoreLocationGroupRepositoryInterface"
+                type="Highgrove\StoreLocator\Model\ResourceModel\StoreLocationGroupRepository" />
+
+    <preference for="MageWorx\StoreLocator\Helper\Data" type="Highgrove\StoreLocator\Helper\Data" />
+    <preference for="MageWorx\Locations\Model\LocationRepository" type="Highgrove\StoreLocator\Model\LocationRepository" />
+
+
+    <virtualType name="Highgrove\StoreLocator\Logger" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/store-locator.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="Highgrove\StoreLocator\CustomLogging" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="object">Highgrove\StoreLocator\Logger</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Highgrove\StoreLocator\Model\CookieManagement">
+        <arguments>
+            <argument name="logger" xsi:type="object">Highgrove\StoreLocator\CustomLogging</argument>
+        </arguments>
+    </type>
+    <type name="Highgrove\StoreLocator\Model\ResourceModel\StoreLocationGroupRepository">
+        <arguments>
+            <argument name="logger" xsi:type="object">Highgrove\StoreLocator\CustomLogging</argument>
+        </arguments>
+    </type>
+    <type name="Highgrove\StoreLocator\Setup\Patch\Data\UpdateStoreLocationsWithGooglePlaceId">
+        <arguments>
+            <argument name="logger" xsi:type="object">Highgrove\StoreLocator\CustomLogging</argument>
+        </arguments>
+    </type>
+    <type name="Highgrove\StoreLocator\Setup\Patch\Data\UpdateStoreLocationCodes">
+        <arguments>
+            <argument name="logger" xsi:type="object">Highgrove\StoreLocator\CustomLogging</argument>
+        </arguments>
+    </type>
+    <type name="Highgrove\StoreLocator\Setup\Patch\Data\CreateStoreLocations">
+        <arguments>
+            <argument name="logger" xsi:type="object">Highgrove\StoreLocator\CustomLogging</argument>
+        </arguments>
+    </type>
+    <preference for="MageWorx\StoreLocator\Block\Search" type="Highgrove\StoreLocator\Block\Search"/>
+    <preference for="MageWorx\StoreLocator\Block\Filter"
+                type="Highgrove\StoreLocator\Block\Filter" />
+    <preference for="MageWorx\Locations\Ui\DataProvider\Location\Form\LocationDataProvider" type="Highgrove\StoreLocator\Ui\DataProvider\Location\Form\LocationDataProvider"/>
+</config>

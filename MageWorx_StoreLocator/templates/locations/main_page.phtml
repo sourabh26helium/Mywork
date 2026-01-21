@@ -1,0 +1,35 @@
+<?php
+
+/** 
+ * @var $block \MageWorx\StoreLocator\Block\MainPage 
+ * */
+
+
+// $location = $block->getCurrentLocation();
+
+?>
+    <div id="mw-store-locator-locations" class="mw-store-locator-locations"></div>
+
+    <script>
+        require(["jquery"], function ($) {
+            $(document).ready(function () {
+                var url = '<?= /* @noEscape */ $block->getBaseUrl() ?>store_locator/location/updatemainpage';
+
+                $.ajax({
+                    url: url + '?_=' + new Date().getTime(),
+                    type: 'POST',
+                    isAjax: true,
+                    dataType: 'html',
+                    showLoader: true,
+                    success: function (xhr, status, errorThrown) {
+                        $('#mw-store-locator-locations').html(xhr);
+                        $('#mw-store-locator-locations').trigger('map_initialize');
+                    },
+                    error: function (xhr, status, errorThrown) {
+                        console.log('There was an error loading stores popup.');
+                        console.log(errorThrown);
+                    }
+                });
+            });
+        })
+    </script>
