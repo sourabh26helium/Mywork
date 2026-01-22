@@ -143,8 +143,6 @@ if (isset($storePageId) && $storePageId!='' && $storePageId!= '338') {
                                 jQuery('#mw-all-stores #store_cms_page').removeClass('d-none');
                             }
                         }
-
-
                         if(jQuery("#mw_administrative_area_level_1").val())
                         {
                             jQuery("#mw-store-locator-locations #locator-filter-list .mw-sl__stores__current").text(jQuery("#mw_administrative_area_level_1").val());
@@ -330,8 +328,6 @@ if (isset($storePageId) && $storePageId!='' && $storePageId!= '338') {
                 jQuery("#mw-sl_search_text").val(preparedName);
                 jQuery(".mw-sl_search_text").val(preparedName);
             }
-
-
             if(jQuery('#current_location_clicked').val()==1)
             {
                 for (var i = 0; i < results[0].address_components.length; i++) {
@@ -349,8 +345,6 @@ if (isset($storePageId) && $storePageId!='' && $storePageId!= '338') {
                     }
                 }
             }
-
-
         });
 
         jQuery("#mw-sl__lat").val(position.coords.latitude);
@@ -484,5 +478,233 @@ if (isset($storePageId) && $storePageId!='' && $storePageId!= '338') {
             }
         });
     });
+    require([
+    'jquery',
+    'jquery/jquery.cookie'
+    ], function ($) {
+        'use strict';
+        const SESSION_KEY = 'hg_auto_store_resolved';
+        const DEFAULT_CURRENT_PAGE = 'cms_index_index';
+        const DEFAULT_RADIUS = 1000;
+        const LOCATION_MAP = {
+            1: { address: '147 Spence Street, Portsmith QLD 4870', lat: -16.9214, lng: 145.7781, city: 'Kamerunga', region: 'Queensland', postcode: '4870', country: 'AU' },
+            2: { address: 'Charlton QLD 4350', lat: -27.5197, lng: 151.9870, city: 'Charlton', region: 'Queensland', postcode: '4350', country: 'AU' },
+            3: { address: 'Lawnton QLD 4501', lat: -27.2843, lng: 152.9860, city: 'Lawnton', region: 'Queensland', postcode: '4501', country: 'AU' },
+            4: { address: 'Ironpot QLD 4701', lat: -23.3467, lng: 150.4615, city: 'Ironpot', region: 'Queensland', postcode: '4701', country: 'AU' }
+        };
+        function log() {
+            console.log.apply(console, ['[StoreSearch]'].concat([].slice.call(arguments)));
+        }
 
-</script>
+        function getUrlParam(name) {
+            return new URLSearchParams(window.location.search).get(name);
+        }
+
+        function shouldRunOnce() {
+            if (sessionStorage.getItem(SESSION_KEY)) return false;
+            if ($.cookie('mageworx_location_id')) {
+                sessionStorage.setItem(SESSION_KEY, '1');
+                return false;
+            }
+            return true;
+        }
+
+        function markDone() {
+            sessionStorage.setItem(SESSION_KEY, '1');
+        }
+
+        function setMageWorxCookies(locationId) {
+            if (!locationId || $.cookie('mageworx_location_id')) return;
+
+            const opts = {
+                expires: 7,
+                path: '/',
+                secure: location.protocol === 'https:'
+            };
+
+            $.cookie('mageworx_location_id', locationId, opts);
+            $.cookie('mage_manual_location', locationId, opts);
+
+            log('Cookies set → mageworx_location_id:', locationId);
+            markDone();
+        }
+
+        function buildUrl() {
+            return (
+                '/store_locator/location/searchLocations' +
+                '?_=' + Date.now() +
+                '&type=by_radius' +
+                '&current_page=' + DEFAULT_CURRENT_PAGE +
+                '&radius=' + DEFAULT_RADIUS
+            );
+        }
+        function reverseGeocode(lat, lng, callback) {
+            if (!window.google || !google.maps || !google.maps.Geocoder) {
+                log('Google Maps not available');
+                callback(null);
+                return;
+            }
+
+            const geocoder = new google.maps.Geocoder();
+
+            geocoder.geocode({ location: { lat, lng } }, function (results, status) {
+                if (status !== 'OK' || !results.length) {
+                    log('Reverse geocode failed:', status);
+                    callback(null);
+                    return;
+                }
+
+                const geo = {
+                    address: results[0].formatted_address,
+                    city: '',
+                    region: '',
+                    postcode: '',
+                    country: ''
+                };
+
+                results[0].address_components.forEach(function (c) {
+                    if (c.types.includes('locality')) geo.city = c.long_name;
+                    if (c.types.includes('administrative_area_level_1')) geo.region = c.long_name;
+                    if (c.types.includes('postal_code')) geo.postcode = c.long_name;
+                    if (c.types.includes('country')) geo.country = c.short_name;
+                });
+
+                callback(geo);
+            });
+        }
+        function fetchNearestStore(location) {
+            if (!shouldRunOnce()) return;
+
+            log('Searching stores for:', location);
+
+            $.ajax({
+                url: buildUrl(),
+                type: 'POST',
+                dataType: 'html',
+                data: {
+                    search_text: location.address,
+                    current_location_clicked: 0,
+                    'autocomplete[lat]': location.lat,
+                    'autocomplete[lng]': location.lng,
+                    'autocomplete[city]': location.city,
+                    'autocomplete[region]': location.region,
+                    'autocomplete[postcode]': location.postcode,
+                    'autocomplete[country_id]': location.country,
+                    search_radius: DEFAULT_RADIUS
+                }
+            }).done(function (html) {
+                const container = document.createElement('div');
+                container.innerHTML = html;
+
+                const li = container.querySelector('li.stores-list-item');
+                if (!li) {
+                    log('No store found → fallback');
+                    markDone();
+                    return;
+                }
+
+                const btn = li.querySelector('.hg-sl__store__select');
+                const locationId = btn?.getAttribute('data-bind');
+                const storeName = li.querySelector('.mw-sl__store__info__name') ?.textContent.trim();
+                const postcodeText = li.querySelector('.force-font-weight-normal') ?.textContent || '';
+                const postcode = postcodeText.replace(/\D/g, '');
+                log('Resolved store ID:', locationId);
+                setMageWorxCookies(locationId);
+                updateTopBarStoreLabel(storeName, postcode);
+            }).fail(function () {
+                log('Store search AJAX failed');
+                markDone();
+            });
+        }
+        function resolveUsingFastly() {
+            $.getJSON('/highgrove_cms/getipparams/index')
+                .done(function (resp) {
+
+                    if (!resp || !resp.should_auto_detect || resp.geo_from_fastly.country !== 'AU') {
+                        log('Fastly geo not eligible');
+                        markDone();
+                        return;
+                    }
+
+                    const geo = resp.geo_from_fastly;
+
+                    if (!geo.city && !geo.postcode) {
+                        log('Fastly geo too coarse');
+                        markDone();
+                        return;
+                    }
+
+                    fetchNearestStore({
+                        address: [geo.city, geo.region, geo.postcode, 'Australia'].filter(Boolean).join(', '),
+                        city: geo.city,
+                        region: geo.region,
+                        postcode: geo.postcode,
+                        country: 'AU'
+                    });
+                })
+                .fail(function () {
+                    log('Fastly request failed');
+                    markDone();
+                });
+        }
+
+        function updateTopBarStoreLabel(storeName, postcode) {
+            const $label = $('.top-bar .set-my-locaton'); // ⬅ FIXED typo
+
+            if (!$label.length) {
+                console.warn('[StoreUI] Top bar label not found');
+                return;
+            }
+
+            const text = postcode
+                ? `Your store: ${storeName}, ${postcode}`
+                : `Your store: ${storeName}`;
+
+            $label.text(text);
+
+            console.log('[StoreUI] Top bar updated →', text);
+        }
+        
+        $(window).on('load', function () {
+
+            // TEST MODE
+            const param = parseInt(getUrlParam('param'), 10);
+            if (LOCATION_MAP[param]) {
+                log('Using TEST LOCATION:', param);
+                fetchNearestStore(LOCATION_MAP[param]);
+                return;
+            }
+
+            // GEOIP / Browser GEO (preferred)
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function (pos) {
+                        reverseGeocode(pos.coords.latitude, pos.coords.longitude, function (geo) {
+                            if (!geo || geo.country !== 'AU') {
+                                resolveUsingFastly();
+                                return;
+                            }
+
+                            fetchNearestStore({
+                                address: geo.address,
+                                lat: pos.coords.latitude,
+                                lng: pos.coords.longitude,
+                                city: geo.city,
+                                region: geo.region,
+                                postcode: geo.postcode,
+                                country: geo.country
+                            });
+                        });
+                    },
+                    function () {
+                        log('Browser GEO denied → Fastly fallback');
+                        resolveUsingFastly();
+                    },
+                    { timeout: 8000 }
+                );
+            } else {
+                resolveUsingFastly();
+            }
+        });
+    });
+    </script>

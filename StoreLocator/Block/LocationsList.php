@@ -106,19 +106,18 @@ class LocationsList extends \MageWorx\StoreLocator\Block\LocationsList
      * @param string $locationCode
      * @return int
      */
-    public function getLocationId(string $locationCode = 'HBUN'): int
+    public function getLocationId(?string $locationCode = null): ?int
     {
-        try {
-            if (!empty($locationCode)) {
-                $location = $this->locationRepository->getByCode($locationCode);
-                if ($locationId = $location->getEntityId()) {
-                    return $locationId;
-                }
-            }
-        } catch (NoSuchEntityException $e) {
-            return false;
+        if (!$locationCode) {
+            $locationCode = 'HBUN';
         }
 
-        return false;
+        try {
+            $location = $this->locationRepository->getByCode($locationCode);
+
+            return (int) $location->getEntityId();
+        } catch (NoSuchEntityException $e) {
+            return null;
+        }
     }
-    }
+}

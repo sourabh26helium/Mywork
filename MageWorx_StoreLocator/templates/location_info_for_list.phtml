@@ -8,7 +8,7 @@ $locationId = (int)$location->getId();
 $stockStatus = $block->isProductInStock($location);
 ?>
 
-<li class="11111 stores-list-item location-info-block_<?= $block->escapeHtmlAttr($locationId) ?>">
+<li class="stores-list-item location-info-block_<?= $block->escapeHtmlAttr($locationId) ?>">
     <div class="item-container pt-0 w-100 position-relative <?= $block->escapeHtmlAttr('js-item-' . $locationId) ?>">
         <?php if ($block->isCheckout()) : ?>
             <div class="custom-control custom-radio">
